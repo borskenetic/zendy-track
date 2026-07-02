@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ZendyLogsExport;
 use App\Services\ZendyTrackingService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ZendyController extends Controller
 {
@@ -55,6 +57,18 @@ class ZendyController extends Controller
         return view('zendy.index', compact('logs'));
     }
 
+    public function exportLogs(Request $request)
+    {
+        $logs = $this->tracking->baseQuery($request)
+            ->with('actor')
+            ->latest()
+            ->get();
+
+        $filename = 'zendy-activity-logs-'.now()->format('Y-m-d').'.xlsx';
+
+        return Excel::download(new ZendyLogsExport($logs), $filename);
+    }
+
     public function activity(Request $request)
     {
         $logs = $this->tracking->baseQuery($request)
@@ -63,6 +77,18 @@ class ZendyController extends Controller
             ->paginate(15);
 
         return view('zendy.activity', compact('logs'));
+    }
+
+    public function exportActivity(Request $request)
+    {
+        $logs = $this->tracking->baseQuery($request)
+            ->where('actor_user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        $filename = 'my-zendy-activity-'.now()->format('Y-m-d').'.xlsx';
+
+        return Excel::download(new ZendyLogsExport($logs, simple: true), $filename);
     }
 
     public function store(Request $request)

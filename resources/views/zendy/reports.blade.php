@@ -4,6 +4,14 @@
 @section('page_subtitle', 'Usage analytics and trends')
 
 @section('content')
+<div class="card-surface" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+    <div>
+        <h3 style="margin: 0 0 4px;">Usage overview</h3>
+        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Analytics based on all tracked Zendy events</p>
+    </div>
+    <a href="{{ route('zendy.reports.export', request()->query()) }}" class="btn-app btn-outline-app">Download Excel</a>
+</div>
+
 <div class="card-grid">
     <div class="stat-card">
         <div class="stat-label">Total Launches</div>

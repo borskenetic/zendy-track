@@ -86,6 +86,7 @@ Route::middleware(['auth', 'can:canAccessZendy'])->group(function () {
     Route::get('/zendy/launch', [ZendyController::class, 'launch'])->name('zendy.launch');
     Route::get('/zendy/go', [ZendyController::class, 'go'])->name('zendy.go');
     Route::get('/zendy/activity', [ZendyController::class, 'activity'])->name('zendy.activity');
+    Route::get('/zendy/activity/export', [ZendyController::class, 'exportActivity'])->name('zendy.activity.export');
     Route::post('/zendy/session-end', [ZendyController::class, 'sessionEnd'])->name('zendy.session-end');
 });
 
@@ -151,7 +152,9 @@ Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
 // =============================
 Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/zendy/logs', [ZendyController::class, 'index'])->name('zendy.logs');
+    Route::get('/zendy/logs/export', [ZendyController::class, 'exportLogs'])->name('zendy.logs.export');
     Route::get('/zendy/reports', [ZendyReportController::class, 'index'])->name('zendy.reports');
+    Route::get('/zendy/reports/export', [ZendyReportController::class, 'export'])->name('zendy.reports.export');
 
     Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.index');
 

@@ -2,15 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ZendyReportsExport;
 use App\Services\ZendyTrackingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ZendyReportController extends Controller
 {
     public function __construct(private ZendyTrackingService $tracking) {}
 
     public function index(Request $request)
+    {
+        return view('zendy.reports', $this->buildReportData($request));
+    }
+
+    public function export(Request $request)
+    {
+        $filename = 'zendy-reports-'.now()->format('Y-m-d').'.xlsx';
+
+        return Excel::download(
+            new ZendyReportsExport($this->buildReportData($request)),
+            $filename,
+        );
+    }
+
+    private function buildReportData(Request $request): array
     {
         $baseQuery = $this->tracking->baseQuery($request);
 
@@ -54,7 +71,7 @@ class ZendyReportController extends Controller
             ->orderBy('date')
             ->get();
 
-        return view('zendy.reports', compact(
+        return compact(
             'logs',
             'totalLaunches',
             'uniqueUsers',
@@ -64,6 +81,6 @@ class ZendyReportController extends Controller
             'submissionsByCampus',
             'submissionsByAction',
             'submissionsOverTime',
-        ));
+        );
     }
 }

@@ -17,6 +17,7 @@
         </select>
         <button type="submit" class="btn-app btn-primary-app">Filter</button>
         <a href="{{ route('zendy.activity') }}" class="btn-app btn-outline-app">Reset</a>
+        <a href="{{ route('zendy.activity.export', request()->query()) }}" class="btn-app btn-outline-app">Download Excel</a>
     </form>
 </div>
 
