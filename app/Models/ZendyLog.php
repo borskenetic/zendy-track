@@ -48,6 +48,11 @@ class ZendyLog extends Model
         };
     }
 
+    public static function labelForAction(?string $action): string
+    {
+        return (new static(['action' => $action]))->actionLabel();
+    }
+
     public function durationSeconds(): ?int
     {
         $seconds = $this->metadata['estimated_duration_seconds'] ?? null;

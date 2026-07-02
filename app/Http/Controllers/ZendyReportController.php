@@ -33,6 +33,11 @@ class ZendyReportController extends Controller
 
         $logs = (clone $baseQuery)->orderBy('created_at', 'desc')->paginate(15);
 
+        $exportLogs = (clone $baseQuery)
+            ->with('actor')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $launchActions = ['go_to_zendy', 'zendy_launch', 'zendy_sso', 'zendy_form_submission'];
 
         $totalLaunches = (clone $baseQuery)->whereIn('action', $launchActions)->count();
@@ -73,6 +78,7 @@ class ZendyReportController extends Controller
 
         return compact(
             'logs',
+            'exportLogs',
             'totalLaunches',
             'uniqueUsers',
             'estimatedReturns',

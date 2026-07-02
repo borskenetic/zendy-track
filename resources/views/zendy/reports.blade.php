@@ -4,13 +4,15 @@
 @section('page_subtitle', 'Usage analytics and trends')
 
 @section('content')
-<div class="card-surface" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-    <div>
-        <h3 style="margin: 0 0 4px;">Usage overview</h3>
-        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Analytics based on all tracked Zendy events</p>
+<form action="{{ route('zendy.reports') }}" method="GET" class="card-surface" style="margin-bottom: 20px;">
+    <div class="filter-bar">
+        <input type="date" name="from_date" class="form-control-app" value="{{ request('from_date') }}">
+        <input type="date" name="to_date" class="form-control-app" value="{{ request('to_date') }}">
+        <button type="submit" class="btn-app btn-primary-app">Filter</button>
+        <a href="{{ route('zendy.reports') }}" class="btn-app btn-outline-app">Reset</a>
+        <a href="{{ route('zendy.reports.export', request()->query()) }}" class="btn-app btn-outline-app">Download Excel</a>
     </div>
-    <a href="{{ route('zendy.reports.export', request()->query()) }}" class="btn-app btn-outline-app">Download Excel</a>
-</div>
+</form>
 
 <div class="card-grid">
     <div class="stat-card">
@@ -92,7 +94,7 @@
     new Chart(document.getElementById('actionChart'), {
         type: 'bar',
         data: {
-            labels: @json($submissionsByAction->pluck('action')),
+            labels: @json($submissionsByAction->map(fn ($row) => \App\Models\ZendyLog::labelForAction($row->action))->values()),
             datasets: [{
                 data: @json($submissionsByAction->pluck('total')),
                 backgroundColor: chartColors,

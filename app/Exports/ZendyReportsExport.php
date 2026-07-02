@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\ZendyLog;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -15,12 +16,70 @@ class ZendyReportsExport implements WithMultipleSheets
     public function sheets(): array
     {
         return [
+            new ZendyReportDashboardSheet($this->data),
             new ZendyReportSummarySheet($this->data),
             new ZendyReportByCourseSheet($this->data['submissionsByCourse']),
             new ZendyReportByCampusSheet($this->data['submissionsByCampus']),
             new ZendyReportByActionSheet($this->data['submissionsByAction']),
             new ZendyReportOverTimeSheet($this->data['submissionsOverTime']),
+            new ZendyReportLogsSheet($this->data['exportLogs']),
         ];
+    }
+}
+
+class ZendyReportDashboardSheet implements FromCollection, WithTitle
+{
+    public function __construct(private array $data) {}
+
+    public function collection(): Collection
+    {
+        $rows = collect();
+        $avgDuration = $this->data['avgDuration'];
+
+        $rows->push(['Zendy Usage Report']);
+        $rows->push(['Generated At', now()->timezone('Asia/Manila')->format('Y-m-d h:i A')]);
+        $rows->push(['']);
+
+        $rows->push(['Summary']);
+        $rows->push(['Total Launches', $this->data['totalLaunches']]);
+        $rows->push(['Unique Users', $this->data['uniqueUsers']]);
+        $rows->push(['Estimated Returns', $this->data['estimatedReturns']]);
+        $rows->push(['Average Time Away', $avgDuration ? gmdate('H:i:s', (int) $avgDuration) : '—']);
+        $rows->push(['']);
+
+        $rows->push(['Launches by Course']);
+        $rows->push(['Course', 'Total']);
+        foreach ($this->data['submissionsByCourse'] as $row) {
+            $rows->push([$row->course ?? '—', $row->total]);
+        }
+        $rows->push(['']);
+
+        $rows->push(['Launches by Campus']);
+        $rows->push(['Campus', 'Total']);
+        foreach ($this->data['submissionsByCampus'] as $row) {
+            $rows->push([$row->campus ?? '—', $row->total]);
+        }
+        $rows->push(['']);
+
+        $rows->push(['By Event Type']);
+        $rows->push(['Event Type', 'Total']);
+        foreach ($this->data['submissionsByAction'] as $row) {
+            $rows->push([ZendyLog::labelForAction($row->action), $row->total]);
+        }
+        $rows->push(['']);
+
+        $rows->push(['Launches Over Time']);
+        $rows->push(['Date', 'Launches']);
+        foreach ($this->data['submissionsOverTime'] as $row) {
+            $rows->push([$row->date, $row->total]);
+        }
+
+        return $rows;
+    }
+
+    public function title(): string
+    {
+        return 'Dashboard';
     }
 }
 
@@ -66,12 +125,12 @@ class ZendyReportByCourseSheet implements FromCollection, WithHeadings, WithTitl
 
     public function headings(): array
     {
-        return ['Course', 'Total'];
+        return ['Course', 'Launches'];
     }
 
     public function title(): string
     {
-        return 'By Course';
+        return 'Launches by Course';
     }
 }
 
@@ -89,12 +148,12 @@ class ZendyReportByCampusSheet implements FromCollection, WithHeadings, WithTitl
 
     public function headings(): array
     {
-        return ['Campus', 'Total'];
+        return ['Campus', 'Launches'];
     }
 
     public function title(): string
     {
-        return 'By Campus';
+        return 'Launches by Campus';
     }
 }
 
@@ -105,7 +164,7 @@ class ZendyReportByActionSheet implements FromCollection, WithHeadings, WithTitl
     public function collection(): Collection
     {
         return $this->rows->map(fn ($row) => [
-            'action' => str_replace('_', ' ', ucfirst((string) $row->action)),
+            'action' => ZendyLog::labelForAction($row->action),
             'total' => $row->total,
         ]);
     }
@@ -117,7 +176,7 @@ class ZendyReportByActionSheet implements FromCollection, WithHeadings, WithTitl
 
     public function title(): string
     {
-        return 'By Event';
+        return 'By Event Type';
     }
 }
 
@@ -140,6 +199,14 @@ class ZendyReportOverTimeSheet implements FromCollection, WithHeadings, WithTitl
 
     public function title(): string
     {
-        return 'Over Time';
+        return 'Launches Over Time';
+    }
+}
+
+class ZendyReportLogsSheet extends ZendyLogsExport implements WithTitle
+{
+    public function title(): string
+    {
+        return 'Activity Logs';
     }
 }
