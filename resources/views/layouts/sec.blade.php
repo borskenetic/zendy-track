@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <link rel="stylesheet" href="{{ asset('public/css/books/ref.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/ref.css') }}">
 
     @stack('styles')
     @yield('styles')
@@ -45,7 +45,7 @@
     <!-- HEADER + BANNER -->
     <div class="d-flex align-items-center px-4 py-2 flex-wrap" style="background-color: white; position: relative;">
         <a href="{{ route('book.index') }}">
-            <img src="{{ asset('images/pantasLogo.png') }}" alt="New Logo" class="header-logo-img" />
+            <img src="{{ asset('images/d.png') }}" alt="New Logo" class="header-logo-img" />
         </a>
         <h1 class="school-name mb-0 ms-2"></h1>
 
@@ -98,7 +98,9 @@
                     <a href="{{ route('rooms.schedule') }}">View Schedule</a>
                     <a href="{{ route('rooms.pending') }}">Pending Reservations</a>
                     <a href="{{ route('rooms.logs') }}">Reservation Logs</a>
+                    @can('isAdmin')
                     <a href="{{ route('feedback.index') }}" class="feedback-link">Show Feedback</a>
+                    @endcan
                     <a href="{{ route('sms.page') }}">SMS Blast</a>
                 </div>
             </div>

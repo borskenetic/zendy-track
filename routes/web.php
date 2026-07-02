@@ -27,6 +27,9 @@ use App\Http\Controllers\SMSController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FineSettingController;
 use App\Http\Controllers\OpenLibraryCopyCatalogController;
+use App\Http\Controllers\ZendyController;
+use App\Http\Controllers\ZendyReportController;
+use App\Http\Controllers\SSOController;
 use Carbon\Carbon;
 use App\Models\Book;
 
@@ -49,14 +52,14 @@ Route::get('/rooms/{id}/show', [RoomReservationController::class, 'show'])->name
 
 Route::get('/register', [PendingStudentController::class, 'create'])->name('patron.register');
 Route::post('/register', [PendingStudentController::class, 'store'])->name('pending.store');
-Route::post('/register-employee', [PendingEmployeeController::class, 'store'])->name('pendingEmployee.store');
+
+Route::get('/pending/approve/{id}', [PendingStudentController::class, 'approve'])->name('pending.approve');
+Route::get('/pending/reject/{id}', [PendingStudentController::class, 'reject'])->name('pending.reject');
 // Feedback Form (User-facing)
 Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
 Route::get('/books/copies', [BookController::class, 'viewCopies'])->name('books.copies');
 
-// Feedback List (Admin/staff view)
-Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.index');
 
 
 Route::post('/checkout/process', [CheckoutController::class, 'process'])
@@ -72,14 +75,22 @@ Route::post('/students/profile/request',
     [StudentController::class, 'submitEditRequest']
 )->name('students.profile.request');
 
+Route::post('/zendy/store', [ZendyController::class, 'store']);
+Route::get('/sso-library', [SSOController::class, 'redirectToLibrary'])
+    ->name('sso.library')
+    ->middleware(['auth', 'can:canAccessZendy']);
+
+// Zendy area (all allowed users)
+Route::middleware(['auth', 'can:canAccessZendy'])->group(function () {
+    Route::get('/zendy', [ZendyController::class, 'home'])->name('zendy.home');
+    Route::get('/zendy/launch', [ZendyController::class, 'launch'])->name('zendy.launch');
+    Route::get('/zendy/go', [ZendyController::class, 'go'])->name('zendy.go');
+    Route::get('/zendy/activity', [ZendyController::class, 'activity'])->name('zendy.activity');
+    Route::post('/zendy/session-end', [ZendyController::class, 'sessionEnd'])->name('zendy.session-end');
+});
 
 // =============================
-// Student / Faculty only
-// =============================
-
-
-// =============================
-// Admin + Staff
+// Admin + Staff (circulation / catalog — not the full admin dashboard)
 // =============================
 Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
     Route::resource('book', BookController::class);
@@ -139,6 +150,11 @@ Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
 // Admin-only Routes
 // =============================
 Route::middleware(['auth', 'can:isAdmin'])->group(function () {
+    Route::get('/zendy/logs', [ZendyController::class, 'index'])->name('zendy.logs');
+    Route::get('/zendy/reports', [ZendyReportController::class, 'index'])->name('zendy.reports');
+
+    Route::get('/feedbacks', [FeedbackController::class, 'index'])->name('feedback.index');
+
     // Book Logs
     Route::get('/logs', [BookLogController::class, 'index'])->name('logs.index');
     Route::post('/logs', [BookLogController::class, 'store'])->name('logs.store');
@@ -179,6 +195,7 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
 
     // User Management
     Route::get('/view-users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/view-users/import-template', [UserController::class, 'downloadImportTemplate'])->name('users.import.template');
     Route::get('/edit-user/{id}', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/update-user/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/delete-user/{id}', [UserController::class, 'destroy'])->name('users.destroy');
@@ -231,5 +248,8 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/sms/scan-message', [SmsController::class,'scanMessage']);
     Route::post('/sms/scan-message', [SmsController::class,'updateScanMessage']);
     Route::get('/sms/count',[SmsController::class,'count'])->name('sms.count');
-
+    Route::post('/users/import', [UserController::class, 'import'])->name('users.import');
+    
+    Route::post('/users/import/preview', [UserController::class, 'importPreview'])->name('users.import.preview');
+    Route::post('/users/import/confirm', [UserController::class, 'importConfirm'])->name('users.import.confirm');
 });

@@ -43,8 +43,8 @@
 
     <!-- HEADER + BANNER -->
     <div class="d-flex align-items-center px-4 py-2 flex-wrap" style="background-color: white; position: relative;">
-        <a href="{{ route('book.index') }}">
-            <img src="{{ asset('images/pantasLogo.png') }}" alt="New Logo" class="header-logo-img" />
+        <a href="{{ route('zendy.home') }}">
+            <img src="{{ asset('images/d.png') }}" alt="New Logo" class="header-logo-img" />
         </a>
         <h1 class="school-name mb-0 ms-2"></h1>
 
@@ -53,7 +53,7 @@
         <div id="routeWrapper" class="d-flex gap-2 flex-wrap ms-auto responsive-nav">
             <button id="customMenuClose" class="d-md-none close-btn">&times;</button>
 
-            <a class="btn0 btn-sm">Home</a>
+        <a class="btn0 btn-sm">Home</a>
 
             <div class="attendance_dropdown">
                 <button class="attendance_dropdown-button">Attendance</button>
@@ -98,7 +98,9 @@
                     <a href="{{ route('rooms.schedule') }}">View Schedule</a>
                     <a href="{{ route('rooms.pending') }}">Pending Reservations</a>
                     <a href="{{ route('rooms.logs') }}">Reservation Logs</a>
+                    @can('isAdmin')
                     <a href="{{ route('feedback.index') }}" class="feedback-link">Show Feedback</a>
+                    @endcan
                     <a href="{{ route('sms.page') }}">SMS Blast</a>
                 </div>
             </div>

@@ -21,6 +21,9 @@ class User extends Authenticatable
         'fname',
         'lname',
         'email',
+        'course',
+        'department',
+        'campus',
         'password',
         'role',
     ];
@@ -45,6 +48,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+        ];
+    }
+
+    public static function roleOptions(): array
+    {
+        return [
+            'student' => 'Student',
+            'faculty' => 'Faculty',
+            'librarian' => 'Librarian',
+            'admin' => 'Administrator',
         ];
     }
 }

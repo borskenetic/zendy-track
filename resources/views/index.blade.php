@@ -3,82 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="img/pantas-10.png">
-    <title>PANTAS | Platform</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/d.png') }}">
+    <title>Zendy Portal — JIB</title>
+    <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=4">
 </head>
-<body>
+<body class="landing-page">
 
-    <header>
-        <div class="logo-container">
-            <img src="img/pantas-logo-landscape-10.png" alt="PANTAS Logo" class="logo">
-        </div>
-        <nav class="nav-links">
-            <ul>
-                <li><a href="about.html">ABOUT</a></li>
-                <li><a href="{{ route('landing') }}">OPAC</a></li>
-                <li><a href="https://zendy.io/">ZENDY</a></li>
-                <li><a href="contact.html">CONTACT US</a></li>
-                <li><a href="{{ url('/rooms/book') }}">ROOM RESERVATIONS</a></li>
-                <li><a href="{{ route('feedback.create') }}" class="feedback-link" >FEEDBACK</a></li>
-                <li><a href="{{ route('login') }}" class="login-button">LOGIN</a></li>
-            </ul>
-        </nav>
-    </header>
+<nav class="landing-nav">
+    <img src="{{ asset('images/d.png') }}" alt="JIB Logo">
+    <div class="landing-nav-links">
+        <a href="{{ route('patron.register') }}" class="ghost">Register</a>
+        <a href="{{ route('login') }}" class="solid">Sign in</a>
+    </div>
+</nav>
 
-    <main class="hero">
-        <div class="hero-content">
-            <h1 class="fade-in">WELCOME TO PANTAS</h1>
-        </div>
-    </main>
-
-    <section class="about-section fade-in-scroll">
-        <div class="container">
-            <img src="img/pantas-10.png" alt="PANTAS Logo Large" class="about-logo">
-            
-            <h2 class="tagline">"Pinoy Automated Next-Generation Technology for Academic Services"</h2>
-            
-            <p class="description">
-                PANTAS (Affiliated by AREA51) is a smart digital library system designed to revolutionize how libraries operate. It bridges traditional physical resources with modern digital management using advanced RFID technology. As AREA 51’s first start-up venture, PANTAS aims to build the libraries of tomorrow – offering intelligent solutions that improve efficiency, enhance security, and simplify daily operations for librarians, educators, and institutions.
+<main class="landing-main">
+    <section class="landing-hero">
+        <div class="landing-hero-content">
+            <p class="landing-eyebrow">Joji Ilagan International Schools</p>
+            <h1>Research smarter with Zendy</h1>
+            <p class="landing-lead">
+                Access scholarly articles, journals, and e-books through your institution's portal.
+                Sign in to launch Zendy and track your usage.
             </p>
-            
-            <h3 class="footer-motto">“Your Partner in Building the Libraries of Tomorrow”</h3>
+            <div class="landing-cta">
+                <a href="{{ route('login') }}" class="btn-app btn-primary-app landing-btn-primary">Sign in to Zendy</a>
+                <a href="{{ route('patron.register') }}" class="btn-app btn-outline-app landing-btn-secondary">Create account</a>
+            </div>
+        </div>
+
+        <div class="landing-video-panel">
+            <video autoplay muted loop playsinline>
+                <source src="{{ asset('videos/library-bg.mp4') }}" type="video/mp4">
+            </video>
         </div>
     </section>
 
-<footer>
-        <div class="footer-container">
-            <div class="footer-col branding">
-                <img src="img/pantas-logo-landscape-10.png" alt="Pantas Logo" class="footer-logo">
-                <img src="img/area-51-new-logo-2-copy-10.png" alt="Area 51 Logo" class="footer-logo-sub">
-                <p class="copyright">Pantas &copy; 2025. All Rights Reserved.</p>
+    <div class="landing-features">
+            <div class="landing-feature">
+                <span class="landing-feature-icon">📚</span>
+                <h3>Millions of publications</h3>
+                <p>Search journals, articles, and e-books in one place.</p>
             </div>
-
-            <div class="footer-col">
-                <h3>QUICK LINKS</h3>
-                <ul>
-                    <li><a href="index.html">HOME</a></li>
-                    <li><a href="#">ABOUT</a></li>
-                    <li><a href="contact us.html">CONTACT US</a></li>
-                    <li><a href="#">ROOM RESERVATIONS</a></li>
-                </ul>
+            <div class="landing-feature">
+                <span class="landing-feature-icon">🔐</span>
+                <h3>Institutional access</h3>
+                <p>Log in with your school account to get started.</p>
             </div>
-
-            <div class="footer-col">
-                <h3>GET IN TOUCH</h3>
-                <p>Zamoras Bldg, 2nd Floor, Purok 4, Glodo Subd,<br>
-                   San Francisco, Panabo City, Davao del Norte</p>
-                <p class="schedule">MONDAY - FRIDAY<br>9:00 AM - 5:00 PM</p>
-                <p><a href="mailto:inquiry@area51.ph">inquiry@area51.ph</a></p>
-                <p>0917 762 1021</p>
+            <div class="landing-feature">
+                <span class="landing-feature-icon">📊</span>
+                <h3>Library reports</h3>
+                <p>Helps your library understand how research resources are used on campus.</p>
             </div>
         </div>
-    </footer>
+</main>
 
-    
+<footer class="landing-footer">
+    <p>&copy; {{ date('Y') }} Joji Ilagan International Schools</p>
+</footer>
 
-
-
-    <script src="script.js"></script>
 </body>
 </html>

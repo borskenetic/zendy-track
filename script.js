@@ -1,3 +1,5 @@
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = document.querySelector('.login-btn');
     const title = document.querySelector('h1');
@@ -64,3 +66,4 @@ document.addEventListener('DOMContentLoaded', () => {
         formBox.style.transform = "translateY(0)";
     }, 500);
 });
+

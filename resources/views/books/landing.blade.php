@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Library Landing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('public/css/books/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/landing.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/qz-tray/qz-tray.js"></script>
 </head>
 
@@ -13,7 +13,7 @@
     <!-- Header -->
     <header>
         <div class="logo" style="margin-left: 100px;">
-            <img src="{{ asset('images/pantasLogo.png') }}" alt="Library Logo">
+            <img src="{{ asset('images/d.png') }}" alt="Library Logo">
         </div>
         <form action="{{ route('logout') }}" method="POST" class="mb-0" hidden>
             @csrf
@@ -41,14 +41,14 @@
             <div class="carousel-track" id="carouselTrack">
                 @foreach ($carouselBooks as $book)
                 <div class="carosel"
-                    data-img="{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
+                    data-img="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
                     data-title="{{ $book->title_statement }}" data-author="{{ $book->main_author }}"
                     data-note="{{ $book->general_note }}" data-call="{{ $book->call_number }}" data-id="{{ $book->id }}"
                     data-year="{{ $book->pub_year }}" data-availability="{{ $book->availability }}" data-copies="1"
                     data-content="{{ $book->content_type }}" data-fixed="{{ $book->fixed_length_data }}"
                     data-library="{{ $book->library_name }}" onclick="openBookCard(this)">
 
-                    <img src="{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
+                    <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
                         alt="{{ $book->title_statement }}">
                     <p>{{ $book->title_statement }}</p>
                 </div>
@@ -134,7 +134,7 @@
             <div class="book-grid" id="bookGrid">
                 @foreach ($books as $book)
                 <div class="book-card"
-                    data-img="{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
+                    data-img="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
                     data-title="{{ $book->title_statement }}" data-author="{{ $book->main_author }}"
                     data-note="{{ $book->general_note }}" data-call="{{ $book->call_number }}" data-id="{{ $book->id }}"
                     data-year="{{ $book->pub_year }}" data-copies="{{ $book->copies }}"
@@ -147,7 +147,7 @@
                     </p>
 
                     <img
-                        src="{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}">
+                        src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}">
 
                     <p>{{ $book->title_statement }}</p>
                     <small>{{ $book->copies }} copies</small>
@@ -261,8 +261,8 @@
         window.CSRF_TOKEN = "{{ csrf_token() }}";
     </script>
 
-    <script src="{{ asset('public/js/landings.js') }}"></script>
-    <script src="{{ asset('public/js/cart.js') }}"></script>
+    <script src="{{ asset('js/landings.js') }}"></script>
+    <script src="{{ asset('js/cart.js') }}"></script>
 </body>
 
 </html>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('public/css/books/edit.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/edit.css') }}">
 
 
 </head>
@@ -307,7 +307,7 @@
                     @if ($book->cover_image)
                     <div class="file-preview">
 
-                        <img src="{{ asset('public/storage/' . $book->cover_image) }}" alt="Cover Image"
+                        <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover Image"
                             style="height: 280px; width: 380px; border-radius: 20px; display: block; margin-bottom: 10px;">
 
                     </div>

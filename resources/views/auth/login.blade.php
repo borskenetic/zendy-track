@@ -1,93 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Important for mobile scaling -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+@extends('layouts.guest')
 
-    <style>
-        .rounded-custom {
-            border-radius: 20px;
-            padding: 14px;
-            font-size: 18px;
-        }
+@section('title', 'Sign In')
 
-        .login-title {
-            font-size: 26px;
-        }
+@section('content')
+<div class="logo-wrap">
+    <img src="{{ asset('images/d.png') }}" alt="JIB Logo">
+</div>
 
-        .login-subtitle {
-            font-size: 17px;
-        }
+<h1>Welcome back</h1>
+<p class="subtitle">Sign in to access Zendy</p>
 
-        @media (max-width: 576px) {
-            .login-title {
-                font-size: 22px;
-            }
-
-            .login-subtitle {
-                font-size: 15px;
-            }
-
-            .rounded-custom {
-                font-size: 16px;
-                padding: 12px;
-            }
-
-            .card {
-                padding: 2rem 1rem !important;
-            }
-        }
-    </style>
-</head>
-<body class="bg-light d-flex justify-content-center align-items-center" style="height: 100vh;">
-
-    <div class="card shadow login-card w-100 mx-3" style="max-width: 450px; padding: 3rem;">
-        <div class="text-center">
-            <img src="{{ asset('images/d.png') }}" alt="Area 51 Logo" class="mb-3" style="max-width: 180px; width: 100%;">
-        </div>
-
-        <h5 class="text-center fw-bold login-title">Welcome! Let’s Begin</h5>
-        <p class="text-center text-muted login-subtitle">Log in to Continue</p>
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-            <div class="mb-4">
-                <input type="email" name="email" class="form-control rounded-custom" placeholder="Email" required autofocus>
-            </div>
-            <div class="mb-3">
-                <input type="password" name="password" class="form-control rounded-custom" placeholder="Password" required>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mt-2 flex-wrap">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                    <label class="form-check-label text-lowercase" for="remember">
-                        Remember me
-                    </label>
-                </div>
-                <a href="#" class="text-primary">Forgot password?</a>
-            </div>
-
-            @error('email')
-                <div class="alert alert-danger mt-2">{{ $message }}</div>
-            @enderror
-
-            <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary btn-lg">Login</button>
-            </div>
-            
-        
-            
-            <div class="d-grid mt-3">
-                <a href="{{ route('patron.register') }}" class="btn btn-outline-primary btn-lg">
-                    Register
-                </a>
-            </div>
-
-        </form>
+<form method="POST" action="{{ route('login') }}">
+    @csrf
+    <div class="form-group-app">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="you@jib.edu.ph" required autofocus>
+    </div>
+    <div class="form-group-app">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" required>
     </div>
 
-</body>
-</html>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.88rem;">
+        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" name="remember" id="remember">
+            Remember me
+        </label>
+    </div>
+
+    @error('email')
+        <div class="alert-app alert-danger-app">{{ $message }}</div>
+    @enderror
+
+    <button type="submit" class="btn-app btn-primary-app" style="width: 100%; padding: 14px;">Sign in</button>
+</form>
+
+<div class="guest-links">
+    Don't have an account? <a href="{{ route('patron.register') }}">Register</a>
+</div>
+@endsection

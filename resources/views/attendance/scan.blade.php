@@ -3,7 +3,7 @@
 <head>
   <title>Library Attendance & Book RFID</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{ asset('public/css/attendance/scan.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/attendance/scan.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     /* Footer marquee styling */
@@ -37,7 +37,7 @@
   <header>
     <div class="header">
       <div class="logo-title">
-        <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
+        <img src="{{ asset('images/d.png') }}" alt="Logo">
         <div class="system-title">SMART DIGITAL LIBRARY</div>
         <a href="{{ route('book.index') }}" class="home-button">Home</a>
       </div>

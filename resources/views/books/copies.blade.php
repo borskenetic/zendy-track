@@ -6,8 +6,8 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('public/css/books/landing.css') }}">
-    <link rel="stylesheet" href="{{ asset('public/css/books/index.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/index.css') }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- Bootstrap JS (needed for modals) -->
@@ -145,8 +145,8 @@
     class="btn btn-dark">
     Cart (<span id="cartCount">0</span>)
 </button>
-<script src="{{ asset('public/js/landings.js') }}"></script>
-<script src="{{ asset('public/js/cart.js') }}"></script>
+<script src="{{ asset('js/landings.js') }}"></script>
+<script src="{{ asset('js/cart.js') }}"></script>
 
 </body>
 </html>

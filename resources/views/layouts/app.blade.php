@@ -15,7 +15,7 @@
 
     {{-- NAVBAR --}}
     <div class="d-flex align-items-center px-4 py-2 flex-wrap" style="background-color: white; position: relative;">
-        <img src="{{ asset('images/pantasLogo.png') }}" alt="New Logo" class="header-logo-img" />
+        <img src="{{ asset('images/d.png') }}" alt="New Logo" class="header-logo-img" />
         <h1 class="school-name mb-0 ms-2"></h1>
 
         <button id="customMenuToggle" class="d-md-none toggle-btn">&#9776;</button>
@@ -65,7 +65,9 @@
                     <a href="{{ route('rooms.schedule') }}">View Schedule</a>
                     <a href="{{ route('rooms.pending') }}">Pending Reservations</a>
                     <a href="{{ route('rooms.logs') }}">Reservation Logs</a>
+                    @can('isAdmin')
                     <a href="{{ route('feedback.index') }}">Show Feedback</a>
+                    @endcan
                 </div>
             </div>
 

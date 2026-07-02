@@ -23,3 +23,5 @@ yarn-error.log
 /.vscode
 /.zed
 
+# Local media copies (served from public/)
+/videos/

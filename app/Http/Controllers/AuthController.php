@@ -7,38 +7,50 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    /**
+     * Roles that may use the app after login (Zendy home, SSO, etc.).
+     * OPAC (/opac) is public; patrons are no longer sent there on login.
+     */
+    private function redirectsToZendy(?string $role): bool
+    {
+        return in_array($role, ['admin', 'librarian', 'student', 'faculty'], true);
+    }
+
     public function showLogin()
     {
         if (auth()->check()) {
             $role = auth()->user()->role;
-            return match ($role) {
-                'admin', 'staff' => redirect()->route('book.index'),
-                'student', 'faculty' => redirect()->route('landing'),
-                default => redirect()->route('login')->with('error', 'Unauthorized role.'),
-            };
+
+            return $this->redirectsToZendy($role)
+                ? redirect()->route('zendy.home')
+                : redirect()->route('login')->with('error', 'Unauthorized role.');
         }
         return view('auth.login');
     }
-
+    
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+    
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
             $user = Auth::user();
 
-            return match ($user->role) {
-                'admin', 'staff' => redirect()->intended('/book'),
-                'student', 'faculty' => redirect()->intended('landing'),
-                default => redirect()->route('login')->with('error', 'Unauthorized role.'),
-            };
-        }
+            if (! $this->redirectsToZendy($user->role)) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
+                return redirect()->route('login')->with('error', 'Unauthorized role.');
+            }
+
+            // Always land on Zendy after login so patrons are never sent to OPAC via `url.intended`.
+            return redirect()->route('zendy.home');
+        }
+    
         return back()->withErrors([
             'email' => 'Invalid credentials.',
         ]);

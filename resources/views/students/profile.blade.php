@@ -1,5 +1,5 @@
 @extends('layouts.ot')
-<link rel="stylesheet" href="{{ asset('public/css/students/students.css') }}">
+<link rel="stylesheet" href="{{ asset('css/students/students.css') }}">
 @section('content')
 <div class="container py-4">
 

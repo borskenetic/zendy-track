@@ -3,13 +3,13 @@
 <head>
     <title>Registered Faculty</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('public/css/students/students.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/students/students.css') }}">
 </head>
 <body>
 
 <!-- Header with Left Logo and Right Logout Button -->
 <div class="d-flex align-items-center px-4 py-2 flex-wrap" style="background-color: white; position: relative;">
-    <img src="{{ asset('images/pantasLogo.png') }}" alt="New Logo" class="header-logo-img" />
+    <img src="{{ asset('images/d.png') }}" alt="New Logo" class="header-logo-img" />
     <h1 class="school-name mb-0 ms-2"></h1>
 
     <button id="customMenuToggle" class="d-md-none toggle-btn">&#9776;</button>

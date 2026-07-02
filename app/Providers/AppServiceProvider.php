@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Config;
 use Carbon\Carbon;
 
@@ -26,5 +27,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Optional: Set Carbon locale if you use translated dates
         Carbon::setLocale(Config::get('app.locale'));
+        
+        Paginator::useBootstrap();
     }
+
 }

@@ -1,6 +1,6 @@
 @extends('layouts.sec')
 
-<link rel="stylesheet" href="{{ asset('public/css/books/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/books/index.css') }}">
 @section('content')
 <div class="container mt-5">
     <h2>Review LoC Record</h2>

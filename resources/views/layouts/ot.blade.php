@@ -31,7 +31,7 @@
 
     <!-- HEADER + BANNER -->
     <div class="d-flex align-items-center px-4 py-2 flex-wrap" style="background-color: white; position: relative;">
-        <img src="{{ asset('images/pantasLogo.png') }}" alt="New Logo" class="header-logo-img" />
+        <img src="{{ asset('images/d.png') }}" alt="New Logo" class="header-logo-img" />
         <h1 class="school-name mb-0 ms-2"></h1>
 
        

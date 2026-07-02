@@ -16,10 +16,14 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('isAdmin', fn(User $user) => $user->role === 'admin');
 
-        Gate::define('isStaff', fn(User $user) => $user->role === 'staff');
+        Gate::define('isStaff', fn(User $user) => $user->role === 'librarian');
 
-        Gate::define('isAdminOrStaff', fn(User $user) =>
-            in_array($user->role, ['admin', 'staff'])
+        /** Legacy library tools — admin only in the Zendy portal. */
+        Gate::define('isAdminOrStaff', fn(User $user) => $user->role === 'admin');
+
+        /** Zendy portal — student, faculty, librarian, and admin. */
+        Gate::define('canAccessZendy', fn(User $user) =>
+            in_array($user->role, ['admin', 'librarian', 'student', 'faculty'], true)
         );
 
         Gate::define('isStudent', fn(User $user) =>

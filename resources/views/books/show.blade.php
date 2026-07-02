@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>View Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('public/css/books/show.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/show.css') }}">
 </head>
 
 <body>
@@ -19,8 +19,8 @@
             <div class="col-12 col-md-4 text-center">
                 @if ($book->cover_image)
                 <p><strong>856 (Cover Image):</strong></p>
-                <a href="{{ asset('public/storage/' . $book->cover_image) }}" target="_blank">
-                    <img src="{{ asset('public/storage/' . $book->cover_image) }}" alt="Cover Image"
+                <a href="{{ asset('storage/' . $book->cover_image) }}" target="_blank">
+                    <img src="{{ asset('storage/' . $book->cover_image) }}" alt="Cover Image"
                         class="img-thumbnail" style="height: 4in; width: 3.5in;">
                 </a>
                 @else

@@ -1,7 +1,7 @@
 @extends('layouts.sec')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('public/css/file/index.css') }}">
+<link rel="stylesheet" href="{{ asset('css/file/index.css') }}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 @endsection
 
