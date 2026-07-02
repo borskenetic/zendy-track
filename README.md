@@ -79,6 +79,10 @@ Run migrations on the server after pulling updates:
 php artisan migrate --force
 ```
 
+**Existing database:** only the dated `2026_07_02_*` migrations run automatically. They add missing Zendy columns (including `zendy_logs.metadata`) without recreating tables.
+
+**Brand-new database:** see `database/migrations/README.md` for the `_fresh_install` path.
+
 ## License
 
 MIT
