@@ -57,7 +57,14 @@
 
     <div class="form-group-app">
         <label>Email</label>
-        <input type="email" name="email" pattern="^[a-zA-Z0-9._%+-]+@jib\.edu\.ph$" title="Use your @jib.edu.ph email" value="{{ old('email') }}" placeholder="you@jib.edu.ph" required>
+        <input type="email" name="email"
+            value="{{ old('email') }}"
+            placeholder="{{ \App\Support\InstitutionEmail::placeholder() }}"
+            @if ($pattern = \App\Support\InstitutionEmail::htmlPattern())
+                pattern="{{ $pattern }}"
+                title="{{ \App\Support\InstitutionEmail::validationMessage() }}"
+            @endif
+            required>
     </div>
 
     <div class="form-group-app">

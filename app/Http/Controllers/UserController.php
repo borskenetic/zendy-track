@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Rules\AllowedInstitutionEmail;
+use App\Support\InstitutionEmail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -22,7 +24,7 @@ class UserController extends Controller
             'email' => [
                 'required',
                 'email',
-                'ends_with:@jib.edu.ph',
+                new AllowedInstitutionEmail,
                 Rule::unique('users', 'email')->ignore($user?->id),
             ],
             'role' => ['required', Rule::in($this->allowedRoles())],
@@ -89,8 +91,8 @@ class UserController extends Controller
                 continue;
             }
 
-            if (!str_ends_with($email, '@jib.edu.ph')) {
-                $errors[] = "Row $rowNumber: Invalid email ($email). Must be @jib.edu.ph";
+            if ($email && ! InstitutionEmail::isAllowed($email)) {
+                $errors[] = "Row $rowNumber: Invalid email ($email). ".InstitutionEmail::validationMessage();
                 continue;
             }
 
@@ -171,7 +173,7 @@ class UserController extends Controller
                 $errors[] = 'Missing required fields';
             }
 
-            if ($email && !str_ends_with($email, '@jib.edu.ph')) {
+            if ($email && ! InstitutionEmail::isAllowed($email)) {
                 $errors[] = 'Invalid domain';
             }
 

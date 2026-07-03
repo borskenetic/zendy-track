@@ -53,6 +53,7 @@ Default seeded admin (change after first login):
 | `ZENDY_REDIRECT_URL` | Where users are sent to use Zendy (default `https://zendy.io/`) |
 | `ZENDY_SSO_URL` | Zendy SSO endpoint |
 | `SSO_SECRET` | Shared secret for signing JWT SSO tokens |
+| `ALLOWED_EMAIL_DOMAINS` | Comma-separated email domains for registration (e.g. `jib.edu.ph`). Leave empty to allow any email. |
 
 ## Main routes
 

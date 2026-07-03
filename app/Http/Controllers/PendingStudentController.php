@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PendingUser;
 use App\Models\User;
+use App\Rules\AllowedInstitutionEmail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -32,15 +33,13 @@ class PendingStudentController extends Controller
             'email'       => [
                 'required',
                 'email',
-                'regex:/^[a-zA-Z0-9._%+-]+@jib\.edu\.ph$/',
+                new AllowedInstitutionEmail,
                 'unique:pending_users,email',
                 'unique:users,email',
             ],
             'password'    => 'required|min:6',
             'campus'      => 'required|string|max:255',
             'course'      => 'required_if:role,student|nullable|string|max:255',
-        ], [
-            'email.regex' => 'Invalid email, please use your own school\'s domain',
         ]);
 
         PendingUser::create([

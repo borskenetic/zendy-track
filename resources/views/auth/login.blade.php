@@ -14,7 +14,7 @@
     @csrf
     <div class="form-group-app">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="you@jib.edu.ph" required autofocus>
+        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="{{ \App\Support\InstitutionEmail::placeholder() }}" required autofocus>
     </div>
     <div class="form-group-app">
         <label for="password">Password</label>

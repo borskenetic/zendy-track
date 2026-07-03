@@ -38,8 +38,15 @@
 
                 <div class="form-group-app">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control-app" placeholder="name@jib.edu.ph" pattern="^[a-zA-Z0-9._%+-]+@jib\.edu\.ph$" required>
-                    <p class="form-hint">Must be a valid @jib.edu.ph address.</p>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control-app" placeholder="{{ \App\Support\InstitutionEmail::placeholder() }}"
+                        @if ($pattern = \App\Support\InstitutionEmail::htmlPattern())
+                            pattern="{{ $pattern }}"
+                            title="{{ \App\Support\InstitutionEmail::validationMessage() }}"
+                        @endif
+                        required>
+                    @if (\App\Support\InstitutionEmail::isEnforced())
+                        <p class="form-hint">{{ \App\Support\InstitutionEmail::validationMessage() }}</p>
+                    @endif
                 </div>
 
                 <div class="form-group-app">
