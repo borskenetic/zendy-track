@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="logo-wrap">
-    <img src="{{ asset('images/d.png') }}" alt="JIB Logo">
+    <img src="{{ \App\Support\Branding::logoUrl() }}" alt="{{ \App\Support\Branding::institutionName() }}">
 </div>
 
 <h1>Welcome back</h1>

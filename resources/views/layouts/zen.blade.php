@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Zendy Portal') — JIB</title>
-    <link rel="icon" type="image/png" href="{{ asset('images/d.png') }}">
+    <title>@yield('title', \App\Support\Branding::portalTitle()) — {{ \App\Support\Branding::institutionName() }}</title>
+    <link rel="icon" type="image/png" href="{{ \App\Support\Branding::logoUrl() }}">
     <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=2">
+    @include('layouts.partials.portal-branding')
     @stack('styles')
     @yield('styles')
 </head>
@@ -23,10 +24,10 @@
 <div class="app-shell" id="appShell">
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
-            <img src="{{ asset('images/d.png') }}" alt="JIB Logo">
+            <img src="{{ \App\Support\Branding::logoUrl() }}" alt="{{ \App\Support\Branding::institutionName() }}">
             <div class="sidebar-brand-text">
-                <div class="sidebar-brand-title">Zendy Portal</div>
-                <div class="sidebar-brand-sub">Joji Ilagan International</div>
+                <div class="sidebar-brand-title">{{ \App\Support\Branding::portalTitle() }}</div>
+                <div class="sidebar-brand-sub">{{ \App\Support\Branding::institutionName() }}</div>
             </div>
         </div>
 

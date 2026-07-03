@@ -54,8 +54,22 @@ Default seeded admin (change after first login):
 | `ZENDY_SSO_URL` | Zendy SSO endpoint |
 | `SSO_SECRET` | Shared secret for signing JWT SSO tokens |
 | `ALLOWED_EMAIL_DOMAINS` | Comma-separated email domains for registration (e.g. `jib.edu.ph`). Leave empty to allow any email. |
+| `BRAND_INSTITUTION_NAME` | School name shown in the portal sidebar |
+| `BRAND_PORTAL_TITLE` | Portal title (default `Zendy Portal`) |
+| `BRAND_LOGO_PATH` | Logo path under `public/` (default `images/d.png`) |
+| `BRAND_PRIMARY` | Main accent color (buttons, links, avatar) |
+| `BRAND_PRIMARY_HOVER` | Hover state for primary buttons |
+| `BRAND_SIDEBAR_BG` | Sidebar background |
+| `BRAND_SIDEBAR_BG_HOVER` | Sidebar hover / card backgrounds |
+| `BRAND_BODY_BG` | Page background |
 
-## Main routes
+See `.env.example` for the full list of `BRAND_*` color variables.
+
+## Branding
+
+Set colors and institution name in `.env`, then run `php artisan config:clear`.
+
+For advanced CSS (gradients, custom rules), copy `public/branding/portal.css` and set `BRANDING_CSS=branding/portal.css`.
 
 | Path | Purpose |
 |------|---------|

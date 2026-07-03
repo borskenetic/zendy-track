@@ -176,8 +176,8 @@ a { text-decoration: none; color: inherit; }
 }
 
 .sidebar-link.active {
-    background: rgba(59, 130, 246, 0.18);
-    color: #93c5fd;
+    background: var(--sidebar-active-bg, rgba(59, 130, 246, 0.18));
+    color: var(--sidebar-active-text, #93c5fd);
 }
 
 .sidebar-link .icon {

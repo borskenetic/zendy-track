@@ -1,0 +1,20 @@
+/*
+ * Optional portal branding overrides.
+ *
+ * By default, colors come from .env (BRAND_PRIMARY, BRAND_SIDEBAR_BG, etc.).
+ * Use this file only for extra rules that .env cannot express.
+ *
+ * Enable by setting in .env:
+ *   BRANDING_CSS=branding/portal.css
+ *
+ * Example overrides:
+ *
+ * :root {
+ *     --primary: #0d9488;
+ *     --primary-hover: #0f766e;
+ * }
+ *
+ * .guest-page {
+ *     background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+ * }
+ */
