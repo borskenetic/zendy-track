@@ -6,8 +6,10 @@ return [
     |--------------------------------------------------------------------------
     | Institution identity
     |--------------------------------------------------------------------------
+    |
+    | School name comes from APP_NAME in .env. Portal title and logo are below.
+    |
     */
-    'institution_name' => env('BRAND_INSTITUTION_NAME', 'Joji Ilagan International'),
     'portal_title' => env('BRAND_PORTAL_TITLE', 'Zendy Portal'),
     'logo_path' => env('BRAND_LOGO_PATH', 'images/d.png'),
 

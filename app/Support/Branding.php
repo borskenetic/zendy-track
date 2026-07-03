@@ -6,7 +6,7 @@ class Branding
 {
     public static function institutionName(): string
     {
-        return (string) config('branding.institution_name', config('app.name'));
+        return (string) config('app.name');
     }
 
     public static function portalTitle(): string

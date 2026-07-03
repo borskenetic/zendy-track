@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link rel="icon" type="image/png" href="{{ asset('images/d.png') }}">
-    <title>Zendy Portal — JIB</title>
+    <link rel="icon" type="image/png" href="{{ \App\Support\Branding::logoUrl() }}">
+    <title>{{ \App\Support\Branding::portalTitle() }} — {{ config('app.name') }}</title>
     <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=4">
+    @include('layouts.partials.portal-branding')
 </head>
 <body class="landing-page">
 
 <nav class="landing-nav">
-    <img src="{{ asset('images/d.png') }}" alt="JIB Logo">
+    <img src="{{ \App\Support\Branding::logoUrl() }}" alt="{{ config('app.name') }}">
     <div class="landing-nav-links">
         <a href="{{ route('patron.register') }}" class="ghost">Register</a>
         <a href="{{ route('login') }}" class="solid">Sign in</a>
@@ -21,7 +22,7 @@
 <main class="landing-main">
     <section class="landing-hero">
         <div class="landing-hero-content">
-            <p class="landing-eyebrow">Joji Ilagan International Schools</p>
+            <p class="landing-eyebrow">{{ config('app.name') }}</p>
             <h1>Research smarter with Zendy</h1>
             <p class="landing-lead">
                 Access scholarly articles, journals, and e-books through your institution's portal.
@@ -60,7 +61,7 @@
 </main>
 
 <footer class="landing-footer">
-    <p>&copy; {{ date('Y') }} Joji Ilagan International Schools</p>
+    <p>&copy; {{ date('Y') }} {{ config('app.name') }}</p>
 </footer>
 
 </body>
