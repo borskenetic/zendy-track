@@ -12,21 +12,30 @@ return new class extends Migration
             return;
         }
 
-        $driver = Schema::getConnection()->getDriverName();
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
 
-        if ($driver === 'mysql') {
-            if (Schema::hasColumn('zendy_logs', 'first_name')) {
-                DB::statement('ALTER TABLE zendy_logs MODIFY first_name VARCHAR(100) NULL');
+        $nullableStringColumns = [
+            'first_name' => 100,
+            'last_name' => 100,
+            'email' => 255,
+            'course' => 150,
+            'department' => 150,
+            'campus' => 150,
+        ];
+
+        foreach ($nullableStringColumns as $column => $length) {
+            if (! Schema::hasColumn('zendy_logs', $column)) {
+                continue;
             }
 
-            if (Schema::hasColumn('zendy_logs', 'last_name')) {
-                DB::statement('ALTER TABLE zendy_logs MODIFY last_name VARCHAR(100) NULL');
-            }
+            DB::statement("ALTER TABLE zendy_logs MODIFY {$column} VARCHAR({$length}) NULL");
         }
     }
 
     public function down(): void
     {
-        // Intentionally left empty: forcing NOT NULL would fail on existing null rows.
+        // Intentionally left empty: forcing NOT NULL would fail on existing null/empty rows.
     }
 };

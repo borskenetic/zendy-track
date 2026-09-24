@@ -15,7 +15,7 @@ These migrations **alter** existing tables safely. They check for missing column
 | `2026_07_02_120000_add_zendy_profile_fields_to_users_table` | Adds `course`, `department`, `campus` to `users` if missing |
 | `2026_07_02_120100_setup_pending_users_table` | Creates `pending_users` or adds missing columns |
 | `2026_07_02_120200_upgrade_zendy_logs_table_for_tracking` | Adds `metadata` and other Zendy tracking columns |
-| `2026_09_24_000001_make_zendy_logs_name_columns_nullable` | Makes `first_name` / `last_name` nullable on existing MySQL DBs |
+| `2026_09_24_000001_make_zendy_logs_name_columns_nullable` | Makes profile columns on `zendy_logs` nullable on existing MySQL DBs |
 
 ## Fresh install only
 
