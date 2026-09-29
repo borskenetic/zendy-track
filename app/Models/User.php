@@ -69,4 +69,46 @@ class User extends Authenticatable
             'Bay',
         ];
     }
+
+    /**
+     * Map free-text campus values onto the allowed dropdown options.
+     * Unrecognized non-empty values default to Tagum.
+     */
+    public static function normalizeCampus(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        if ($trimmed === '') {
+            return null;
+        }
+
+        foreach (self::campusOptions() as $campus) {
+            if (strcasecmp($trimmed, $campus) === 0) {
+                return $campus;
+            }
+        }
+
+        $compact = strtolower(preg_replace('/[^a-z0-9]+/i', ' ', $trimmed) ?? $trimmed);
+        $compact = trim(preg_replace('/\s+/', ' ', $compact) ?? $compact);
+
+        if (str_contains($compact, 'tagum')) {
+            return 'Tagum';
+        }
+
+        if (str_contains($compact, 'buenavista')) {
+            return 'Buenavista';
+        }
+
+        if (preg_match('/\bbay\b/', $compact) === 1) {
+            return 'Bay';
+        }
+
+        // Default unknowns to Tagum so charts/filters stay consistent;
+        // accounts can be corrected later via Edit User.
+        return 'Tagum';
+    }
 }
