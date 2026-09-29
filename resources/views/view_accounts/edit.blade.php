@@ -63,7 +63,16 @@
             <div class="form-row-2">
                 <div class="form-group-app">
                     <label for="campus">Campus</label>
-                    <input type="text" id="campus" name="campus" value="{{ old('campus', $user->campus) }}" class="form-control-app" required>
+                    <select id="campus" name="campus" class="form-control-app" required>
+                        @php $selectedCampus = old('campus', $user->campus); @endphp
+                        <option value="" disabled {{ $selectedCampus && in_array($selectedCampus, $campuses, true) ? '' : 'selected' }}>Select campus</option>
+                        @foreach($campuses as $campus)
+                            <option value="{{ $campus }}" {{ $selectedCampus === $campus ? 'selected' : '' }}>{{ $campus }}</option>
+                        @endforeach
+                    </select>
+                    @if($user->campus && ! in_array($user->campus, $campuses, true))
+                        <p class="form-hint">Current value "{{ $user->campus }}" is not in the campus list — please choose Buenavista, Tagum, or Bay.</p>
+                    @endif
                 </div>
                 <div class="form-group-app">
                     <label for="department">Department</label>

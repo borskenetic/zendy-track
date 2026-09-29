@@ -28,7 +28,7 @@ class UserController extends Controller
                 Rule::unique('users', 'email')->ignore($user?->id),
             ],
             'role' => ['required', Rule::in($this->allowedRoles())],
-            'campus' => 'required|string|max:255',
+            'campus' => ['required', Rule::in(User::campusOptions())],
             'department' => 'nullable|string|max:255',
             'course' => 'nullable|string|max:255|required_if:role,student',
             'password' => $user ? 'nullable|string|min:6' : 'required|string|min:6',
@@ -57,6 +57,7 @@ class UserController extends Controller
     {
         return view('view_accounts.create', [
             'roles' => User::roleOptions(),
+            'campuses' => User::campusOptions(),
         ]);
     }
 
@@ -103,6 +104,11 @@ class UserController extends Controller
 
             if (!in_array($role, $this->allowedRoles(), true)) {
                 $errors[] = "Row $rowNumber: Invalid role ($role).";
+                continue;
+            }
+
+            if (! in_array($campus, User::campusOptions(), true)) {
+                $errors[] = "Row $rowNumber: Invalid campus ($campus). Must be one of: ".implode(', ', User::campusOptions());
                 continue;
             }
 
@@ -183,6 +189,10 @@ class UserController extends Controller
 
             if ($role && !in_array($role, $this->allowedRoles(), true)) {
                 $errors[] = 'Invalid role';
+            }
+
+            if ($campus && ! in_array($campus, User::campusOptions(), true)) {
+                $errors[] = 'Invalid campus';
             }
 
             if ($role === 'student' && !$course) {
@@ -278,6 +288,10 @@ class UserController extends Controller
             $query->where('course', $request->course);
         }
 
+        if ($request->filled('campus')) {
+            $query->where('campus', $request->campus);
+        }
+
         if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
@@ -294,6 +308,7 @@ class UserController extends Controller
         return view('view_accounts.list', [
             'users' => $users,
             'courses' => $courses,
+            'campuses' => User::campusOptions(),
             'roles' => User::roleOptions(),
         ]);
     }
@@ -305,6 +320,7 @@ class UserController extends Controller
         return view('view_accounts.edit', [
             'user' => $user,
             'roles' => User::roleOptions(),
+            'campuses' => User::campusOptions(),
         ]);
     }
 

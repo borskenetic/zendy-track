@@ -36,7 +36,12 @@
 
     <div class="form-group-app">
         <label for="campus">Campus</label>
-        <input type="text" name="campus" id="campus" class="form-control-app" value="{{ old('campus') }}" placeholder="e.g. Bay" required>
+        <select name="campus" id="campus" class="form-control-app" required>
+            <option value="" disabled {{ old('campus') ? '' : 'selected' }}>Select campus</option>
+            @foreach(\App\Models\User::campusOptions() as $campus)
+                <option value="{{ $campus }}" {{ old('campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
+            @endforeach
+        </select>
     </div>
 
     <div class="form-group-app" id="wrapCourse">

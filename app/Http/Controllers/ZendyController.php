@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ZendyLogsExport;
+use App\Models\User;
 use App\Services\ZendyTrackingService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ZendyController extends Controller
@@ -97,7 +99,7 @@ class ZendyController extends Controller
             'first_name' => 'required|string|max:100',
             'last_name'  => 'required|string|max:100',
             'course'     => 'required|string|max:100',
-            'campus'     => 'required|string|max:100',
+            'campus'     => ['required', Rule::in(User::campusOptions())],
             'email'      => 'required|email',
         ]);
 

@@ -192,7 +192,7 @@ class ZendyTrackingService
         }
 
         if ($request->filled('search_campus')) {
-            $query->where('campus', 'like', '%'.$request->search_campus.'%');
+            $query->where('campus', $request->search_campus);
         }
 
         if ($request->filled('from_date')) {

@@ -38,7 +38,7 @@ class PendingStudentController extends Controller
                 'unique:users,email',
             ],
             'password'    => 'required|min:6',
-            'campus'      => 'required|string|max:255',
+            'campus'      => ['required', Rule::in(User::campusOptions())],
             'course'      => 'required_if:role,student|nullable|string|max:255',
         ]);
 

@@ -71,7 +71,12 @@
                 <div class="form-row-2">
                     <div class="form-group-app">
                         <label for="campus">Campus</label>
-                        <input type="text" id="campus" name="campus" value="{{ old('campus') }}" class="form-control-app" placeholder="e.g. Bay" required>
+                        <select id="campus" name="campus" class="form-control-app" required>
+                            <option value="" disabled {{ old('campus') ? '' : 'selected' }}>Select campus</option>
+                            @foreach($campuses as $campus)
+                                <option value="{{ $campus }}" {{ old('campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group-app">
                         <label for="department">Department</label>

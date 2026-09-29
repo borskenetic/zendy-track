@@ -23,7 +23,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'course' => fake()->optional()->randomElement(['BSIT', 'BSBA Marketing', 'BSED English']),
             'department' => fake()->optional()->randomElement(['College of IT', 'College of Business', 'College of Education']),
-            'campus' => fake()->randomElement(['Bay', 'San Pablo', 'Lubao', 'Tagum']),
+            'campus' => fake()->randomElement(\App\Models\User::campusOptions()),
             'role' => 'student',
             'remember_token' => Str::random(10),
         ];

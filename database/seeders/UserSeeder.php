@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
                 'email' => 'ana.reyes@jib.edu.ph',
                 'password' => 'password',
                 'role' => 'student',
-                'campus' => 'San Pablo',
+                'campus' => 'Tagum',
                 'department' => 'College of IT',
                 'course' => 'BSIT',
             ],

@@ -8,6 +8,12 @@
     <div class="filter-bar">
         <input type="date" name="from_date" class="form-control-app" value="{{ request('from_date') }}">
         <input type="date" name="to_date" class="form-control-app" value="{{ request('to_date') }}">
+        <select name="search_campus" class="form-control-app">
+            <option value="">All campuses</option>
+            @foreach(\App\Models\User::campusOptions() as $campus)
+                <option value="{{ $campus }}" {{ request('search_campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
+            @endforeach
+        </select>
         <button type="submit" class="btn-app btn-primary-app">Filter</button>
         <a href="{{ route('zendy.reports') }}" class="btn-app btn-outline-app">Reset</a>
         <a href="{{ route('zendy.reports.export', request()->query()) }}" class="btn-app btn-outline-app">Download Excel</a>

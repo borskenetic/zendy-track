@@ -30,11 +30,17 @@
     @endif
 
     <form method="GET" action="{{ route('users.index') }}" class="filter-bar">
-        <input type="text" name="search" class="form-control-app" placeholder="Search name, email, campus..." value="{{ request('search') }}" style="flex: 1;">
+        <input type="text" name="search" class="form-control-app" placeholder="Search name, email..." value="{{ request('search') }}" style="flex: 1;">
         <select name="role" class="form-control-app">
             <option value="">All roles</option>
             @foreach($roles as $value => $label)
                 <option value="{{ $value }}" {{ request('role') === $value ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+        </select>
+        <select name="campus" class="form-control-app">
+            <option value="">All campuses</option>
+            @foreach($campuses as $campus)
+                <option value="{{ $campus }}" {{ request('campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
             @endforeach
         </select>
         <select name="course" class="form-control-app">

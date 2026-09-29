@@ -60,4 +60,13 @@ class User extends Authenticatable
             'admin' => 'Administrator',
         ];
     }
+
+    public static function campusOptions(): array
+    {
+        return [
+            'Buenavista',
+            'Tagum',
+            'Bay',
+        ];
+    }
 }

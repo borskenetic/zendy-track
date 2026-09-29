@@ -8,7 +8,12 @@
     <div class="filter-bar">
         <input type="text" name="search_name" class="form-control-app" placeholder="Search name..." value="{{ request('search_name') }}" style="flex: 1; min-width: 140px;">
         <input type="text" name="search_course" class="form-control-app" placeholder="Course" value="{{ request('search_course') }}" style="flex: 1; min-width: 120px;">
-        <input type="text" name="search_campus" class="form-control-app" placeholder="Campus" value="{{ request('search_campus') }}" style="flex: 1; min-width: 120px;">
+        <select name="search_campus" class="form-control-app" style="flex: 1; min-width: 120px;">
+            <option value="">All campuses</option>
+            @foreach(\App\Models\User::campusOptions() as $campus)
+                <option value="{{ $campus }}" {{ request('search_campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
+            @endforeach
+        </select>
         <input type="date" name="from_date" class="form-control-app" value="{{ request('from_date') }}">
         <input type="date" name="to_date" class="form-control-app" value="{{ request('to_date') }}">
         <select name="action" class="form-control-app">
