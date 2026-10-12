@@ -39,8 +39,11 @@ class PendingStudentController extends Controller
             ],
             'password'    => 'required|min:6',
             'campus'      => ['required', Rule::in(User::campusOptions())],
-            'course'      => 'required_if:role,student|nullable|string|max:255',
+            'course'      => ['required_if:role,student', 'nullable', Rule::in(User::courseOptions())],
+            'grade'       => ['nullable', Rule::in(User::gradeOptions())],
         ]);
+
+        $isStudent = $validated['role'] === 'student';
 
         PendingUser::create([
             'fname'       => $validated['firstname'],
@@ -48,7 +51,8 @@ class PendingStudentController extends Controller
             'email'       => $validated['email'],
             'password'    => Hash::make($validated['password']),
             'campus'      => $validated['campus'],
-            'course'      => $validated['role'] === 'student' ? ($validated['course'] ?? null) : null,
+            'course'      => $isStudent ? ($validated['course'] ?? null) : null,
+            'grade'       => $isStudent ? ($validated['grade'] ?? null) : null,
             'role'        => $validated['role'],
         ]);
 
@@ -71,6 +75,7 @@ class PendingStudentController extends Controller
                 'password'    => $pending->password,
                 'campus'      => $pending->campus,
                 'course'      => $pending->course,
+                'grade'       => $pending->grade,
                 'department'  => $pending->department,
                 'role'        => $pending->role,
             ]);

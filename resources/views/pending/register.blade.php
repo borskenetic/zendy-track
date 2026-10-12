@@ -46,7 +46,22 @@
 
     <div class="form-group-app" id="wrapCourse">
         <label for="course">Course</label>
-        <input type="text" name="course" id="course" class="form-control-app" value="{{ old('course') }}" placeholder="e.g. BSIT">
+        <select name="course" id="course" class="form-control-app">
+            <option value="" disabled {{ old('course') ? '' : 'selected' }}>Select course</option>
+            @foreach(\App\Models\User::courseOptions() as $course)
+                <option value="{{ $course }}" {{ old('course') === $course ? 'selected' : '' }}>{{ $course }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="form-group-app" id="wrapGrade">
+        <label for="grade">Grade</label>
+        <select name="grade" id="grade" class="form-control-app">
+            <option value="" {{ old('grade') ? '' : 'selected' }}>Select grade (optional)</option>
+            @foreach(\App\Models\User::gradeOptions() as $grade)
+                <option value="{{ $grade }}" {{ old('grade') === $grade ? 'selected' : '' }}>{{ $grade }}</option>
+            @endforeach
+        </select>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
@@ -90,7 +105,9 @@
 (function () {
     var roleInput = document.getElementById('inputRole');
     var wrapCourse = document.getElementById('wrapCourse');
+    var wrapGrade = document.getElementById('wrapGrade');
     var courseInput = document.getElementById('course');
+    var gradeInput = document.getElementById('grade');
 
     function setRole(role) {
         roleInput.value = role;
@@ -100,11 +117,14 @@
 
         if (role === 'student') {
             wrapCourse.classList.remove('hidden');
+            wrapGrade.classList.remove('hidden');
             courseInput.required = true;
         } else {
             wrapCourse.classList.add('hidden');
+            wrapGrade.classList.add('hidden');
             courseInput.required = false;
             courseInput.value = '';
+            gradeInput.value = '';
         }
     }
 

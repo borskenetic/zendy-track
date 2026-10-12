@@ -80,9 +80,30 @@
                 </div>
             </div>
 
-            <div class="form-group-app" id="courseField">
-                <label for="course">Course</label>
-                <input type="text" name="course" id="course" class="form-control-app" value="{{ old('course', $user->course) }}">
+            <div class="form-row-2" id="studentFields">
+                <div class="form-group-app" id="courseField">
+                    <label for="course">Course</label>
+                    @php $selectedCourse = old('course', $user->course); @endphp
+                    <select id="course" name="course" class="form-control-app">
+                        <option value="" disabled {{ $selectedCourse && in_array($selectedCourse, $courses, true) ? '' : 'selected' }}>Select course</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course }}" {{ $selectedCourse === $course ? 'selected' : '' }}>{{ $course }}</option>
+                        @endforeach
+                    </select>
+                    @if($user->course && ! in_array($user->course, \App\Models\User::courseOptions(), true))
+                        <p class="form-hint">Current value "{{ $user->course }}" is a legacy course — consider updating to a listed option.</p>
+                    @endif
+                </div>
+                <div class="form-group-app" id="gradeField">
+                    <label for="grade">Grade</label>
+                    @php $selectedGrade = old('grade', $user->grade); @endphp
+                    <select id="grade" name="grade" class="form-control-app">
+                        <option value="" {{ $selectedGrade ? '' : 'selected' }}>Select grade (optional)</option>
+                        @foreach($grades as $grade)
+                            <option value="{{ $grade }}" {{ $selectedGrade === $grade ? 'selected' : '' }}>{{ $grade }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -98,17 +119,22 @@
 <script>
 (function () {
     var roleSelect = document.getElementById('role');
-    var courseField = document.getElementById('courseField');
+    var studentFields = document.getElementById('studentFields');
     var courseInput = document.getElementById('course');
+    var gradeInput = document.getElementById('grade');
 
-    function syncCourseField() {
+    function syncStudentFields() {
         var isStudent = roleSelect.value === 'student';
-        courseField.style.display = isStudent ? '' : 'none';
+        studentFields.style.display = isStudent ? '' : 'none';
         courseInput.required = isStudent;
+        if (!isStudent) {
+            courseInput.value = '';
+            gradeInput.value = '';
+        }
     }
 
-    roleSelect.addEventListener('change', syncCourseField);
-    syncCourseField();
+    roleSelect.addEventListener('change', syncStudentFields);
+    syncStudentFields();
 })();
 </script>
 @endpush

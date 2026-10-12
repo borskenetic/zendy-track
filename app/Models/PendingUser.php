@@ -11,6 +11,7 @@ class PendingUser extends Model
         'lname',
         'email',
         'course',
+        'grade',
         'department',
         'campus',
         'password',

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'lname',
         'email',
         'course',
+        'grade',
         'department',
         'campus',
         'password',
@@ -67,6 +68,30 @@ class User extends Authenticatable
             'Buenavista',
             'Tagum',
             'Bay',
+        ];
+    }
+
+    public static function courseOptions(): array
+    {
+        return [
+            'ASSH',
+            'B&E',
+            'BSA',
+            'BSAIS',
+            'BSCRIM',
+            'BSE',
+            'BSIS',
+            'BSTM',
+            'HE',
+            'Tech-Pro',
+        ];
+    }
+
+    public static function gradeOptions(): array
+    {
+        return [
+            'Grade 11',
+            'Grade 12',
         ];
     }
 

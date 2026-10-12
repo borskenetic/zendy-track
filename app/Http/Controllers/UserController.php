@@ -16,6 +16,17 @@ class UserController extends Controller
         return array_keys(User::roleOptions());
     }
 
+    private function allowedCourses(?User $user = null): array
+    {
+        $courses = User::courseOptions();
+
+        if ($user?->course && ! in_array($user->course, $courses, true)) {
+            $courses[] = $user->course;
+        }
+
+        return $courses;
+    }
+
     private function userValidationRules(?User $user = null): array
     {
         return [
@@ -30,7 +41,8 @@ class UserController extends Controller
             'role' => ['required', Rule::in($this->allowedRoles())],
             'campus' => ['required', Rule::in(User::campusOptions())],
             'department' => 'nullable|string|max:255',
-            'course' => 'nullable|string|max:255|required_if:role,student',
+            'course' => ['nullable', 'required_if:role,student', Rule::in($this->allowedCourses($user))],
+            'grade' => ['nullable', Rule::in(User::gradeOptions())],
             'password' => $user ? 'nullable|string|min:6' : 'required|string|min:6',
         ];
     }
@@ -44,7 +56,7 @@ class UserController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ];
 
-        $columns = ['lname', 'fname', 'email', 'password', 'role', 'campus', 'department', 'course'];
+        $columns = ['lname', 'fname', 'email', 'password', 'role', 'campus', 'department', 'course', 'grade'];
 
         return response()->streamDownload(function () use ($columns) {
             $out = fopen('php://output', 'w');
@@ -58,6 +70,8 @@ class UserController extends Controller
         return view('view_accounts.create', [
             'roles' => User::roleOptions(),
             'campuses' => User::campusOptions(),
+            'courses' => User::courseOptions(),
+            'grades' => User::gradeOptions(),
         ]);
     }
 
@@ -86,6 +100,7 @@ class UserController extends Controller
             $campus = trim($row[5] ?? '');
             $department = trim($row[6] ?? '');
             $course = trim($row[7] ?? '');
+            $grade = trim($row[8] ?? '');
 
             if (!$lname || !$fname || !$email || !$password || !$role || !$campus) {
                 $errors[] = "Row $rowNumber: Missing fields.";
@@ -117,6 +132,16 @@ class UserController extends Controller
                 continue;
             }
 
+            if ($role === 'student' && $course !== '' && ! in_array($course, User::courseOptions(), true)) {
+                $errors[] = "Row $rowNumber: Invalid course ($course). Must be one of: ".implode(', ', User::courseOptions());
+                continue;
+            }
+
+            if ($grade !== '' && ! in_array($grade, User::gradeOptions(), true)) {
+                $errors[] = "Row $rowNumber: Invalid grade ($grade). Must be one of: ".implode(', ', User::gradeOptions());
+                continue;
+            }
+
             try {
                 User::create([
                     'lname' => $lname,
@@ -127,6 +152,7 @@ class UserController extends Controller
                     'campus' => $campus,
                     'department' => $department ?: null,
                     'course' => $role === 'student' ? $course : null,
+                    'grade' => $role === 'student' ? ($grade ?: null) : null,
                 ]);
 
                 $successCount++;
@@ -172,6 +198,7 @@ class UserController extends Controller
             $campus = trim($row[5] ?? '');
             $department = trim($row[6] ?? '');
             $course = trim($row[7] ?? '');
+            $grade = trim($row[8] ?? '');
 
             $errors = [];
 
@@ -199,6 +226,14 @@ class UserController extends Controller
                 $errors[] = 'Course required for students';
             }
 
+            if ($role === 'student' && $course && ! in_array($course, User::courseOptions(), true)) {
+                $errors[] = 'Invalid course';
+            }
+
+            if ($grade !== '' && ! in_array($grade, User::gradeOptions(), true)) {
+                $errors[] = 'Invalid grade';
+            }
+
             $data[] = [
                 'lname' => $lname,
                 'fname' => $fname,
@@ -208,6 +243,7 @@ class UserController extends Controller
                 'campus' => $campus,
                 'department' => $department,
                 'course' => $course,
+                'grade' => $grade,
                 'errors' => $errors
             ];
         }
@@ -239,6 +275,7 @@ class UserController extends Controller
                 'campus' => $row['campus'] ?? null,
                 'department' => $row['department'] ?? null,
                 'course' => $row['role'] === 'student' ? ($row['course'] ?? null) : null,
+                'grade' => $row['role'] === 'student' ? (($row['grade'] ?? '') !== '' ? $row['grade'] : null) : null,
                 'password' => Hash::make($row['password'], ['rounds' => 12]),
                 'role' => $row['role']
             ]);
@@ -254,6 +291,8 @@ class UserController extends Controller
     {
         $validated = $request->validate($this->userValidationRules());
 
+        $isStudent = $validated['role'] === 'student';
+
         User::create([
             'lname' => $validated['lname'],
             'fname' => $validated['fname'],
@@ -261,7 +300,8 @@ class UserController extends Controller
             'role' => $validated['role'],
             'campus' => $validated['campus'],
             'department' => $validated['department'] ?? null,
-            'course' => $validated['role'] === 'student' ? ($validated['course'] ?? null) : null,
+            'course' => $isStudent ? ($validated['course'] ?? null) : null,
+            'grade' => $isStudent ? ($validated['grade'] ?? null) : null,
             'password' => Hash::make($validated['password']),
         ]);
 
@@ -302,6 +342,16 @@ class UserController extends Controller
             $query->where('role', $request->role);
         }
 
+        if ($request->filled('grade')) {
+            if ($request->grade === '__none__') {
+                $query->where(function ($q) {
+                    $q->whereNull('grade')->orWhere('grade', '');
+                });
+            } else {
+                $query->where('grade', $request->grade);
+            }
+        }
+
         $perPage = (int) $request->input('per_page', 10);
         if (! in_array($perPage, [10, 25, 50, 100], true)) {
             $perPage = 10;
@@ -309,16 +359,21 @@ class UserController extends Controller
 
         $users = $query->orderBy('lname')->orderBy('fname')->paginate($perPage)->withQueryString();
 
-        $courses = User::whereNotNull('course')
-            ->where('course', '!=', '')
-            ->select('course')
-            ->distinct()
-            ->orderBy('course')
-            ->pluck('course');
+        $courses = collect(User::courseOptions())
+            ->merge(
+                User::whereNotNull('course')
+                    ->where('course', '!=', '')
+                    ->distinct()
+                    ->pluck('course')
+            )
+            ->unique()
+            ->sort()
+            ->values();
 
         return view('view_accounts.list', [
             'users' => $users,
             'courses' => $courses,
+            'grades' => User::gradeOptions(),
             'campuses' => User::campusOptions(),
             'roles' => User::roleOptions(),
         ]);
@@ -332,6 +387,8 @@ class UserController extends Controller
             'user' => $user,
             'roles' => User::roleOptions(),
             'campuses' => User::campusOptions(),
+            'courses' => $this->allowedCourses($user),
+            'grades' => User::gradeOptions(),
         ]);
     }
 
@@ -340,6 +397,8 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $validated = $request->validate($this->userValidationRules($user));
 
+        $isStudent = $validated['role'] === 'student';
+
         $payload = [
             'fname' => $validated['fname'],
             'lname' => $validated['lname'],
@@ -347,7 +406,8 @@ class UserController extends Controller
             'role' => $validated['role'],
             'campus' => $validated['campus'],
             'department' => $validated['department'] ?? null,
-            'course' => $validated['role'] === 'student' ? ($validated['course'] ?? null) : null,
+            'course' => $isStudent ? ($validated['course'] ?? null) : null,
+            'grade' => $isStudent ? ($validated['grade'] ?? null) : null,
         ];
 
         if (! empty($validated['password'])) {

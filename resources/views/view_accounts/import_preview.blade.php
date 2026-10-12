@@ -18,6 +18,7 @@
                         <th>Campus</th>
                         <th>Department</th>
                         <th>Course</th>
+                        <th>Grade</th>
                         <th>Status</th>
                     </tr>
                 </thead>
@@ -31,6 +32,7 @@
                             <td>{{ $row['campus'] }}</td>
                             <td>{{ $row['department'] ?: '—' }}</td>
                             <td>{{ $row['course'] ?: '—' }}</td>
+                            <td>{{ $row['grade'] ?: '—' }}</td>
                             <td>
                                 @if($row['errors'])
                                     <span style="color: var(--danger); font-size: 0.82rem;">{{ implode(', ', $row['errors']) }}</span>
@@ -46,6 +48,7 @@
                         <input type="hidden" name="data[{{ $index }}][campus]" value="{{ $row['campus'] }}">
                         <input type="hidden" name="data[{{ $index }}][department]" value="{{ $row['department'] }}">
                         <input type="hidden" name="data[{{ $index }}][course]" value="{{ $row['course'] }}">
+                        <input type="hidden" name="data[{{ $index }}][grade]" value="{{ $row['grade'] }}">
                         <input type="hidden" name="data[{{ $index }}][password]" value="{{ $row['password'] }}">
                         <input type="hidden" name="data[{{ $index }}][errors]" value="{{ implode('|', $row['errors']) }}">
                     @endforeach

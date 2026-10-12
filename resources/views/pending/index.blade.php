@@ -14,6 +14,7 @@
                     <th>Role</th>
                     <th>Campus</th>
                     <th>Course</th>
+                    <th>Grade</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -24,7 +25,8 @@
                         <td>{{ $user->email }}</td>
                         <td><span class="badge-app">{{ ucfirst($user->role ?? '—') }}</span></td>
                         <td>{{ $user->campus ?? '—' }}</td>
-                        <td>{{ ($user->role ?? '') === 'student' ? ($user->course ?? '—') : '—' }}</td>
+                        <td>{{ ($user->role ?? '') === 'student' ? ($user->course ?: '—') : '—' }}</td>
+                        <td>{{ ($user->role ?? '') === 'student' ? ($user->grade ?: '—') : '—' }}</td>
                         <td style="white-space: nowrap;">
                             <a href="{{ route('pending.approve', $user->id) }}" class="btn-app btn-success-app btn-sm-app">Approve</a>
                             <a href="{{ route('pending.reject', $user->id) }}" class="btn-app btn-danger-app btn-sm-app" onclick="return confirm('Reject this user?')">Reject</a>
@@ -32,7 +34,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">No pending registrations</td>
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No pending registrations</td>
                     </tr>
                 @endforelse
             </tbody>

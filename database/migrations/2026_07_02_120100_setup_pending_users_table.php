@@ -16,6 +16,7 @@ return new class extends Migration
                 $table->string('email')->unique();
                 $table->string('password');
                 $table->string('course')->nullable();
+                $table->string('grade')->nullable();
                 $table->string('department')->nullable();
                 $table->string('campus')->nullable();
                 $table->string('role')->default('student');
@@ -28,6 +29,10 @@ return new class extends Migration
         Schema::table('pending_users', function (Blueprint $table) {
             if (! Schema::hasColumn('pending_users', 'course')) {
                 $table->string('course')->nullable();
+            }
+
+            if (! Schema::hasColumn('pending_users', 'grade')) {
+                $table->string('grade')->nullable();
             }
 
             if (! Schema::hasColumn('pending_users', 'department')) {
