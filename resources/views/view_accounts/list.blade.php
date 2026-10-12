@@ -45,6 +45,7 @@
         </select>
         <select name="course" class="form-control-app">
             <option value="">All courses</option>
+            <option value="__none__" {{ request('course') === '__none__' ? 'selected' : '' }}>No Course</option>
             @foreach($courses as $course)
                 <option value="{{ $course }}" {{ request('course') == $course ? 'selected' : '' }}>{{ $course }}</option>
             @endforeach
@@ -79,7 +80,7 @@
                         <td>{{ $user->email }}</td>
                         <td><span class="badge-app">{{ $roles[$user->role] ?? ucfirst($user->role) }}</span></td>
                         <td>{{ $user->campus ?? '—' }}</td>
-                        <td>{{ $user->course ?? '—' }}</td>
+                        <td>{{ $user->course ?: 'No Course' }}</td>
                         <td style="white-space: nowrap;">
                             <a href="{{ route('users.edit', $user->id) }}" class="btn-app btn-outline-app btn-sm-app">Edit</a>
                             @if($user->id !== auth()->id())

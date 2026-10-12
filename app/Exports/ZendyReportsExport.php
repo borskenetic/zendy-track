@@ -50,7 +50,7 @@ class ZendyReportDashboardSheet implements FromCollection, WithTitle
         $rows->push(['Launches by Course']);
         $rows->push(['Course', 'Total']);
         foreach ($this->data['submissionsByCourse'] as $row) {
-            $rows->push([$row->course ?? '—', $row->total]);
+            $rows->push([filled($row->course) ? $row->course : 'No Course', $row->total]);
         }
         $rows->push(['']);
 
@@ -118,7 +118,7 @@ class ZendyReportByCourseSheet implements FromCollection, WithHeadings, WithTitl
     public function collection(): Collection
     {
         return $this->rows->map(fn ($row) => [
-            'course' => $row->course ?? '—',
+            'course' => filled($row->course) ? $row->course : 'No Course',
             'total' => $row->total,
         ]);
     }

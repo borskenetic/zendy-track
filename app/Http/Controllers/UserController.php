@@ -285,7 +285,13 @@ class UserController extends Controller
         }
 
         if ($request->filled('course')) {
-            $query->where('course', $request->course);
+            if ($request->course === '__none__') {
+                $query->where(function ($q) {
+                    $q->whereNull('course')->orWhere('course', '');
+                });
+            } else {
+                $query->where('course', $request->course);
+            }
         }
 
         if ($request->filled('campus')) {
@@ -303,7 +309,12 @@ class UserController extends Controller
 
         $users = $query->orderBy('lname')->orderBy('fname')->paginate($perPage)->withQueryString();
 
-        $courses = User::whereNotNull('course')->select('course')->distinct()->orderBy('course')->pluck('course');
+        $courses = User::whereNotNull('course')
+            ->where('course', '!=', '')
+            ->select('course')
+            ->distinct()
+            ->orderBy('course')
+            ->pluck('course');
 
         return view('view_accounts.list', [
             'users' => $users,
