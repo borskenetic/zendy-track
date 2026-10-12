@@ -407,7 +407,10 @@ class UserController extends Controller
             'campus' => $validated['campus'],
             'department' => $validated['department'] ?? null,
             'course' => $isStudent ? ($validated['course'] ?? null) : null,
-            'grade' => $isStudent ? ($validated['grade'] ?? null) : null,
+            // Grade UI is hidden for now; preserve existing value unless explicitly submitted.
+            'grade' => $isStudent
+                ? ($request->has('grade') ? ($validated['grade'] ?? null) : $user->grade)
+                : null,
         ];
 
         if (! empty($validated['password'])) {

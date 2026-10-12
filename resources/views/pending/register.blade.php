@@ -54,16 +54,6 @@
         </select>
     </div>
 
-    <div class="form-group-app" id="wrapGrade">
-        <label for="grade">Grade</label>
-        <select name="grade" id="grade" class="form-control-app">
-            <option value="" {{ old('grade') ? '' : 'selected' }}>Select grade (optional)</option>
-            @foreach(\App\Models\User::gradeOptions() as $grade)
-                <option value="{{ $grade }}" {{ old('grade') === $grade ? 'selected' : '' }}>{{ $grade }}</option>
-            @endforeach
-        </select>
-    </div>
-
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group-app">
             <label>First name</label>
@@ -105,9 +95,7 @@
 (function () {
     var roleInput = document.getElementById('inputRole');
     var wrapCourse = document.getElementById('wrapCourse');
-    var wrapGrade = document.getElementById('wrapGrade');
     var courseInput = document.getElementById('course');
-    var gradeInput = document.getElementById('grade');
 
     function setRole(role) {
         roleInput.value = role;
@@ -117,14 +105,11 @@
 
         if (role === 'student') {
             wrapCourse.classList.remove('hidden');
-            wrapGrade.classList.remove('hidden');
             courseInput.required = true;
         } else {
             wrapCourse.classList.add('hidden');
-            wrapGrade.classList.add('hidden');
             courseInput.required = false;
             courseInput.value = '';
-            gradeInput.value = '';
         }
     }
 

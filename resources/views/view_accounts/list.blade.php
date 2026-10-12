@@ -50,13 +50,6 @@
                 <option value="{{ $course }}" {{ request('course') == $course ? 'selected' : '' }}>{{ $course }}</option>
             @endforeach
         </select>
-        <select name="grade" class="form-control-app">
-            <option value="">All grades</option>
-            <option value="__none__" {{ request('grade') === '__none__' ? 'selected' : '' }}>No Grade</option>
-            @foreach($grades as $grade)
-                <option value="{{ $grade }}" {{ request('grade') === $grade ? 'selected' : '' }}>{{ $grade }}</option>
-            @endforeach
-        </select>
         <select name="per_page" class="form-control-app" onchange="this.form.submit()">
             @foreach([10, 25, 50, 100] as $size)
                 <option value="{{ $size }}" {{ (int) request('per_page', 10) === $size ? 'selected' : '' }}>{{ $size }} per page</option>
@@ -77,7 +70,6 @@
                     <th>Role</th>
                     <th>Campus</th>
                     <th>Course</th>
-                    <th>Grade</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -89,7 +81,6 @@
                         <td><span class="badge-app">{{ $roles[$user->role] ?? ucfirst($user->role) }}</span></td>
                         <td>{{ $user->campus ?? '—' }}</td>
                         <td>{{ $user->course ?: 'No Course' }}</td>
-                        <td>{{ $user->grade ?: '—' }}</td>
                         <td style="white-space: nowrap;">
                             <a href="{{ route('users.edit', $user->id) }}" class="btn-app btn-outline-app btn-sm-app">Edit</a>
                             @if($user->id !== auth()->id())
@@ -103,7 +94,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No users found.</td>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">No users found.</td>
                     </tr>
                 @endforelse
             </tbody>

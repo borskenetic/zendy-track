@@ -84,27 +84,15 @@
                     </div>
                 </div>
 
-                <div class="form-row-2" id="studentFields">
-                    <div class="form-group-app" id="courseField">
-                        <label for="course">Course</label>
-                        <select id="course" name="course" class="form-control-app">
-                            <option value="" disabled {{ old('course') ? '' : 'selected' }}>Select course</option>
-                            @foreach($courses as $course)
-                                <option value="{{ $course }}" {{ old('course') === $course ? 'selected' : '' }}>{{ $course }}</option>
-                            @endforeach
-                        </select>
-                        <p class="form-hint" id="courseHint">Required for students.</p>
-                    </div>
-                    <div class="form-group-app" id="gradeField">
-                        <label for="grade">Grade</label>
-                        <select id="grade" name="grade" class="form-control-app">
-                            <option value="" {{ old('grade') ? '' : 'selected' }}>Select grade (optional)</option>
-                            @foreach($grades as $grade)
-                                <option value="{{ $grade }}" {{ old('grade') === $grade ? 'selected' : '' }}>{{ $grade }}</option>
-                            @endforeach
-                        </select>
-                        <p class="form-hint">Optional — for Grade 11 / Grade 12 students.</p>
-                    </div>
+                <div class="form-group-app" id="courseField">
+                    <label for="course">Course</label>
+                    <select id="course" name="course" class="form-control-app">
+                        <option value="" disabled {{ old('course') ? '' : 'selected' }}>Select course</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course }}" {{ old('course') === $course ? 'selected' : '' }}>{{ $course }}</option>
+                        @endforeach
+                    </select>
+                    <p class="form-hint" id="courseHint">Required for students.</p>
                 </div>
             </div>
 
@@ -132,24 +120,22 @@
 <script>
 (function () {
     var roleSelect = document.getElementById('role');
-    var studentFields = document.getElementById('studentFields');
+    var courseField = document.getElementById('courseField');
     var courseInput = document.getElementById('course');
-    var gradeInput = document.getElementById('grade');
     var courseHint = document.getElementById('courseHint');
 
-    function syncStudentFields() {
+    function syncCourseField() {
         var isStudent = roleSelect.value === 'student';
-        studentFields.style.display = isStudent ? '' : 'none';
+        courseField.style.display = isStudent ? '' : 'none';
         courseInput.required = isStudent;
         courseHint.textContent = isStudent ? 'Required for students.' : 'Only used for students.';
         if (!isStudent) {
             courseInput.value = '';
-            gradeInput.value = '';
         }
     }
 
-    roleSelect.addEventListener('change', syncStudentFields);
-    syncStudentFields();
+    roleSelect.addEventListener('change', syncCourseField);
+    syncCourseField();
 })();
 </script>
 @endpush
