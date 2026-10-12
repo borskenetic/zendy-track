@@ -50,10 +50,16 @@ class ZendyReportController extends Controller
             ->avg(fn ($log) => $log->metadata['estimated_duration_seconds'] ?? null);
 
         $submissionsByCourse = (clone $baseQuery)
-            ->select(DB::raw("COALESCE(NULLIF(TRIM(course), ''), 'No Course') as course"), DB::raw('count(*) as total'))
-            ->groupBy(DB::raw("COALESCE(NULLIF(TRIM(course), ''), 'No Course')"))
-            ->orderByDesc('total')
-            ->get();
+            ->select('course', DB::raw('count(*) as total'))
+            ->groupBy('course')
+            ->get()
+            ->groupBy(fn ($row) => filled(trim((string) $row->course)) ? $row->course : 'No Course')
+            ->map(fn ($rows, $course) => (object) [
+                'course' => $course,
+                'total' => $rows->sum('total'),
+            ])
+            ->sortByDesc('total')
+            ->values();
 
         $submissionsByCampus = (clone $baseQuery)
             ->select('campus', DB::raw('count(*) as total'))
