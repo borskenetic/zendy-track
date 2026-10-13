@@ -187,12 +187,16 @@ class ZendyTrackingService
             });
         }
 
-        if ($request->filled('search_course')) {
-            $query->where('course', 'like', '%'.$request->search_course.'%');
-        }
-
         if ($request->filled('search_campus')) {
             $query->where('campus', $request->search_campus);
+        }
+
+        if ($request->filled('search_grade')) {
+            $query->whereHas('actor', fn ($actor) => $actor->where('grade', $request->search_grade));
+        }
+
+        if ($request->filled('search_course')) {
+            $query->where('course', $request->search_course);
         }
 
         if ($request->filled('from_date')) {

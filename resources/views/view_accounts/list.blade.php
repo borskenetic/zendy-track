@@ -29,7 +29,7 @@
         </div>
     @endif
 
-    <form method="GET" action="{{ route('users.index') }}" class="filter-bar">
+    <form method="GET" action="{{ route('users.index') }}" class="filter-bar" id="usersFilterForm">
         <input type="text" name="search" class="form-control-app" placeholder="Search name, email..." value="{{ request('search') }}" style="flex: 1;">
         <select name="role" class="form-control-app">
             <option value="">All roles</option>
@@ -37,25 +37,17 @@
                 <option value="{{ $value }}" {{ request('role') === $value ? 'selected' : '' }}>{{ $label }}</option>
             @endforeach
         </select>
-        <select name="campus" class="form-control-app">
+        <select name="campus" id="filter_campus" class="form-control-app">
             <option value="">All campuses</option>
             @foreach($campuses as $campus)
                 <option value="{{ $campus }}" {{ request('campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
             @endforeach
         </select>
-        <select name="grade" class="form-control-app">
+        <select name="grade" id="filter_grade" class="form-control-app">
             <option value="">All year levels</option>
-            <option value="__none__" {{ request('grade') === '__none__' ? 'selected' : '' }}>No year level</option>
-            @foreach($grades as $grade)
-                <option value="{{ $grade }}" {{ request('grade') === $grade ? 'selected' : '' }}>{{ $grade }}</option>
-            @endforeach
         </select>
-        <select name="course" class="form-control-app">
+        <select name="course" id="filter_course" class="form-control-app">
             <option value="">All courses</option>
-            <option value="__none__" {{ request('course') === '__none__' ? 'selected' : '' }}>No Course</option>
-            @foreach($courses as $course)
-                <option value="{{ $course }}" {{ request('course') == $course ? 'selected' : '' }}>{{ $course }}</option>
-            @endforeach
         </select>
         <select name="per_page" class="form-control-app" onchange="this.form.submit()">
             @foreach([10, 25, 50, 100] as $size)
@@ -115,3 +107,19 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+@include('partials.affiliation-dropdowns-boot')
+<script>
+initAffiliationFilters({
+    campusId: 'filter_campus',
+    yearId: 'filter_grade',
+    courseId: 'filter_course',
+    initialCampus: @json(request('campus', '')),
+    initialYear: @json(request('grade', '')),
+    initialCourse: @json(request('course', '')),
+    yearExtras: [{ value: '__none__', label: 'No year level' }],
+    courseExtras: [{ value: '__none__', label: 'No Course' }],
+});
+</script>
+@endpush

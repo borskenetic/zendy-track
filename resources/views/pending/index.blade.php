@@ -14,7 +14,7 @@
                     <th>Role</th>
                     <th>Campus</th>
                     <th>Year level</th>
-                    <th>Course</th>
+                    <th>Course / track</th>
                     <th>Actions</th>
                 </tr>
             </thead>

@@ -50,9 +50,15 @@
             <div>{{ auth()->user()->campus }}</div>
         </div>
         @endif
+        @if(auth()->user()->grade)
+        <div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Year level</div>
+            <div>{{ auth()->user()->grade }}</div>
+        </div>
+        @endif
         @if(auth()->user()->course)
         <div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Course</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Course / track</div>
             <div>{{ auth()->user()->course }}</div>
         </div>
         @endif

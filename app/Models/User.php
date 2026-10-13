@@ -115,7 +115,7 @@ class User extends Authenticatable
     public static function yearLevelsForCampus(?string $campus): array
     {
         if ($campus === null || $campus === '') {
-            return [];
+            return self::gradeOptions();
         }
 
         return array_keys(self::affiliationCatalog()[$campus] ?? []);
@@ -124,11 +124,59 @@ class User extends Authenticatable
     /** @return list<string> */
     public static function coursesFor(?string $campus, ?string $yearLevel): array
     {
-        if ($campus === null || $campus === '' || $yearLevel === null || $yearLevel === '') {
-            return [];
+        if ($campus && $yearLevel) {
+            return self::affiliationCatalog()[$campus][$yearLevel] ?? [];
         }
 
-        return self::affiliationCatalog()[$campus][$yearLevel] ?? [];
+        if ($campus) {
+            return self::coursesForCampus($campus);
+        }
+
+        if ($yearLevel) {
+            return self::coursesForYearLevel($yearLevel);
+        }
+
+        return self::courseOptions();
+    }
+
+    /** @return list<string> */
+    public static function coursesForCampus(?string $campus): array
+    {
+        if ($campus === null || $campus === '' || ! isset(self::affiliationCatalog()[$campus])) {
+            return self::courseOptions();
+        }
+
+        $courses = [];
+        foreach (self::affiliationCatalog()[$campus] as $list) {
+            foreach ($list as $course) {
+                $courses[$course] = true;
+            }
+        }
+
+        $courses = array_keys($courses);
+        sort($courses);
+
+        return $courses;
+    }
+
+    /** @return list<string> */
+    public static function coursesForYearLevel(?string $yearLevel): array
+    {
+        if ($yearLevel === null || $yearLevel === '') {
+            return self::courseOptions();
+        }
+
+        $courses = [];
+        foreach (self::affiliationCatalog() as $yearLevels) {
+            foreach ($yearLevels[$yearLevel] ?? [] as $course) {
+                $courses[$course] = true;
+            }
+        }
+
+        $courses = array_keys($courses);
+        sort($courses);
+
+        return $courses;
     }
 
     public static function courseOptions(): array

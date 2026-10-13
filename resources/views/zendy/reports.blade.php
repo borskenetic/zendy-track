@@ -8,11 +8,17 @@
     <div class="filter-bar">
         <input type="date" name="from_date" class="form-control-app" value="{{ request('from_date') }}">
         <input type="date" name="to_date" class="form-control-app" value="{{ request('to_date') }}">
-        <select name="search_campus" class="form-control-app">
+        <select name="search_campus" id="filter_campus" class="form-control-app">
             <option value="">All campuses</option>
             @foreach(\App\Models\User::campusOptions() as $campus)
                 <option value="{{ $campus }}" {{ request('search_campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
             @endforeach
+        </select>
+        <select name="search_grade" id="filter_grade" class="form-control-app">
+            <option value="">All year levels</option>
+        </select>
+        <select name="search_course" id="filter_course" class="form-control-app">
+            <option value="">All courses</option>
         </select>
         <button type="submit" class="btn-app btn-primary-app">Filter</button>
         <a href="{{ route('zendy.reports') }}" class="btn-app btn-outline-app">Reset</a>
@@ -67,6 +73,17 @@
 @endsection
 
 @section('footer')
+@include('partials.affiliation-dropdowns-boot')
+<script>
+initAffiliationFilters({
+    campusId: 'filter_campus',
+    yearId: 'filter_grade',
+    courseId: 'filter_course',
+    initialCampus: @json(request('search_campus', '')),
+    initialYear: @json(request('search_grade', '')),
+    initialCourse: @json(request('search_course', '')),
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const chartColors = ['#2563eb', '#7c3aed', '#16a34a', '#d97706', '#dc2626', '#0891b2'];

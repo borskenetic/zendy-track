@@ -7,12 +7,17 @@
 <form action="{{ route('zendy.logs') }}" method="GET" class="card-surface" style="margin-bottom: 20px;">
     <div class="filter-bar">
         <input type="text" name="search_name" class="form-control-app" placeholder="Search name..." value="{{ request('search_name') }}" style="flex: 1; min-width: 140px;">
-        <input type="text" name="search_course" class="form-control-app" placeholder="Course" value="{{ request('search_course') }}" style="flex: 1; min-width: 120px;">
-        <select name="search_campus" class="form-control-app" style="flex: 1; min-width: 120px;">
+        <select name="search_campus" id="filter_campus" class="form-control-app" style="flex: 1; min-width: 120px;">
             <option value="">All campuses</option>
             @foreach(\App\Models\User::campusOptions() as $campus)
                 <option value="{{ $campus }}" {{ request('search_campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
             @endforeach
+        </select>
+        <select name="search_grade" id="filter_grade" class="form-control-app" style="flex: 1; min-width: 120px;">
+            <option value="">All year levels</option>
+        </select>
+        <select name="search_course" id="filter_course" class="form-control-app" style="flex: 1; min-width: 120px;">
+            <option value="">All courses</option>
         </select>
         <input type="date" name="from_date" class="form-control-app" value="{{ request('from_date') }}">
         <input type="date" name="to_date" class="form-control-app" value="{{ request('to_date') }}">
@@ -85,3 +90,17 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+@include('partials.affiliation-dropdowns-boot')
+<script>
+initAffiliationFilters({
+    campusId: 'filter_campus',
+    yearId: 'filter_grade',
+    courseId: 'filter_course',
+    initialCampus: @json(request('search_campus', '')),
+    initialYear: @json(request('search_grade', '')),
+    initialCourse: @json(request('search_course', '')),
+});
+</script>
+@endpush
