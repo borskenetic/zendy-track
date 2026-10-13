@@ -107,13 +107,18 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/affiliation-dropdowns.js') }}"></script>
+@include('partials.affiliation-dropdowns-boot')
 <script>
 (function () {
     var roleSelect = document.getElementById('role');
 
+    if (typeof initAffiliationDropdowns !== 'function') {
+        console.error('affiliation-dropdowns.js failed to load');
+        return;
+    }
+
     initAffiliationDropdowns({
-        catalog: @json(\App\Models\User::affiliationCatalog()),
+        catalog: window.AFFILIATION_CATALOG || {},
         roleSelectId: 'role',
         studentOnlyIds: ['yearLevelField', 'courseField'],
         isStudent: function () { return roleSelect.value === 'student'; },

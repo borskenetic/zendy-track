@@ -6,7 +6,9 @@
             return;
         }
 
-        var previous = selected != null ? selected : (select.value || '');
+        var list = Array.isArray(options) ? options : [];
+        var previous = selected == null ? '' : String(selected);
+
         select.innerHTML = '';
 
         var blank = document.createElement('option');
@@ -16,7 +18,8 @@
         select.appendChild(blank);
 
         var matched = false;
-        (options || []).forEach(function (value) {
+        for (var i = 0; i < list.length; i++) {
+            var value = list[i];
             var option = document.createElement('option');
             option.value = value;
             option.textContent = value;
@@ -25,12 +28,33 @@
                 matched = true;
             }
             select.appendChild(option);
-        });
+        }
+
+        // If only one real option, select it automatically.
+        if (!matched && list.length === 1) {
+            select.value = list[0];
+            matched = true;
+        }
 
         if (!matched) {
             blank.selected = true;
             select.value = '';
         }
+    }
+
+    function yearLevelsFor(catalog, campus) {
+        if (!campus || !catalog || !catalog[campus]) {
+            return [];
+        }
+        return Object.keys(catalog[campus]);
+    }
+
+    function coursesFor(catalog, campus, year) {
+        if (!campus || !year || !catalog || !catalog[campus] || !catalog[campus][year]) {
+            return [];
+        }
+        var list = catalog[campus][year];
+        return Array.isArray(list) ? list : [];
     }
 
     function initAffiliationDropdowns(config) {
@@ -63,20 +87,15 @@
             }
         }
 
-        function syncYearLevels(preferredYear, preferredCourse) {
-            var campus = campusSelect.value;
-            var yearLevels = campus && catalog[campus] ? Object.keys(catalog[campus]) : [];
-            fillSelect(yearSelect, yearLevels, preferredYear || '', 'Select year level');
-            syncCourses(preferredCourse || '');
+        function syncCourses(preferredCourse) {
+            var courses = coursesFor(catalog, campusSelect.value, yearSelect.value);
+            fillSelect(courseSelect, courses, preferredCourse || '', 'Select course / track');
         }
 
-        function syncCourses(preferredCourse) {
-            var campus = campusSelect.value;
-            var year = yearSelect.value;
-            var courses = campus && year && catalog[campus] && catalog[campus][year]
-                ? catalog[campus][year]
-                : [];
-            fillSelect(courseSelect, courses, preferredCourse || '', 'Select course / track');
+        function syncYearLevels(preferredYear, preferredCourse) {
+            var yearLevels = yearLevelsFor(catalog, campusSelect.value);
+            fillSelect(yearSelect, yearLevels, preferredYear || '', 'Select year level');
+            syncCourses(preferredCourse || '');
         }
 
         function refresh(opts) {
@@ -93,13 +112,23 @@
             }
         }
 
+        function onCampusChange() {
+            if (!isStudentFn()) {
+                return;
+            }
+            syncYearLevels('', '');
+        }
+
+        function onYearChange() {
+            if (!isStudentFn()) {
+                return;
+            }
+            syncCourses('');
+        }
+
         if (!campusSelect.dataset.affiliationBound) {
-            campusSelect.addEventListener('change', function () {
-                syncYearLevels('', '');
-            });
-            yearSelect.addEventListener('change', function () {
-                syncCourses('');
-            });
+            campusSelect.addEventListener('change', onCampusChange);
+            yearSelect.addEventListener('change', onYearChange);
             campusSelect.dataset.affiliationBound = '1';
         }
 

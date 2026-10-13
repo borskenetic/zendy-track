@@ -95,10 +95,11 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/affiliation-dropdowns.js') }}"></script>
+@include('partials.affiliation-dropdowns-boot')
 <script>
 (function () {
     var roleInput = document.getElementById('inputRole');
+    var campusSelect = document.getElementById('campus');
     var affiliation;
 
     function setRole(role) {
@@ -117,8 +118,13 @@
         });
     });
 
+    if (typeof initAffiliationDropdowns !== 'function') {
+        console.error('affiliation-dropdowns.js failed to load');
+        return;
+    }
+
     affiliation = initAffiliationDropdowns({
-        catalog: @json(\App\Models\User::affiliationCatalog()),
+        catalog: window.AFFILIATION_CATALOG || {},
         studentOnlyIds: ['wrapYearLevel', 'wrapCourse'],
         isStudent: function () { return roleInput.value === 'student'; },
         initialCampus: @json(old('campus', '')),
@@ -127,6 +133,14 @@
     });
 
     setRole(@json(old('role', 'student')));
+
+    // Ensure a pre-selected campus (or browser-restored value) still syncs options.
+    if (campusSelect && campusSelect.value) {
+        affiliation.refresh({
+            year: @json(old('grade', '')),
+            course: @json(old('course', '')),
+        });
+    }
 })();
 </script>
 @endpush
