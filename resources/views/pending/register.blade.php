@@ -44,13 +44,17 @@
         </select>
     </div>
 
+    <div class="form-group-app" id="wrapYearLevel">
+        <label for="grade">Year level</label>
+        <select name="grade" id="grade" class="form-control-app">
+            <option value="" disabled selected>Select year level</option>
+        </select>
+    </div>
+
     <div class="form-group-app" id="wrapCourse">
-        <label for="course">Course</label>
+        <label for="course">Course / track</label>
         <select name="course" id="course" class="form-control-app">
-            <option value="" disabled {{ old('course') ? '' : 'selected' }}>Select course</option>
-            @foreach(\App\Models\User::courseOptions() as $course)
-                <option value="{{ $course }}" {{ old('course') === $course ? 'selected' : '' }}>{{ $course }}</option>
-            @endforeach
+            <option value="" disabled selected>Select course / track</option>
         </select>
     </div>
 
@@ -91,25 +95,19 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('js/affiliation-dropdowns.js') }}"></script>
 <script>
 (function () {
     var roleInput = document.getElementById('inputRole');
-    var wrapCourse = document.getElementById('wrapCourse');
-    var courseInput = document.getElementById('course');
+    var affiliation;
 
     function setRole(role) {
         roleInput.value = role;
         document.querySelectorAll('.role-pill').forEach(function (btn) {
             btn.classList.toggle('active', btn.getAttribute('data-role') === role);
         });
-
-        if (role === 'student') {
-            wrapCourse.classList.remove('hidden');
-            courseInput.required = true;
-        } else {
-            wrapCourse.classList.add('hidden');
-            courseInput.required = false;
-            courseInput.value = '';
+        if (affiliation) {
+            affiliation.refresh();
         }
     }
 
@@ -119,7 +117,16 @@
         });
     });
 
-    setRole('{{ old('role', 'student') }}');
+    affiliation = initAffiliationDropdowns({
+        catalog: @json(\App\Models\User::affiliationCatalog()),
+        studentOnlyIds: ['wrapYearLevel', 'wrapCourse'],
+        isStudent: function () { return roleInput.value === 'student'; },
+        initialCampus: @json(old('campus', '')),
+        initialYear: @json(old('grade', '')),
+        initialCourse: @json(old('course', '')),
+    });
+
+    setRole(@json(old('role', 'student')));
 })();
 </script>
 @endpush

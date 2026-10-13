@@ -26,6 +26,9 @@ class PendingStudentController extends Controller
 
     public function store(Request $request)
     {
+        $campus = $request->input('campus');
+        $yearLevel = $request->input('grade');
+
         $validated = $request->validate([
             'role'        => ['required', Rule::in(array_diff(array_keys(User::roleOptions()), ['admin']))],
             'firstname'   => 'required|string|max:255',
@@ -39,8 +42,16 @@ class PendingStudentController extends Controller
             ],
             'password'    => 'required|min:6',
             'campus'      => ['required', Rule::in(User::campusOptions())],
-            'course'      => ['required_if:role,student', 'nullable', Rule::in(User::courseOptions())],
-            'grade'       => ['nullable', Rule::in(User::gradeOptions())],
+            'grade'       => [
+                'nullable',
+                'required_if:role,student',
+                Rule::in(User::yearLevelsForCampus($campus)),
+            ],
+            'course'      => [
+                'nullable',
+                'required_if:role,student',
+                Rule::in(User::coursesFor($campus, $yearLevel)),
+            ],
         ]);
 
         $isStudent = $validated['role'] === 'student';

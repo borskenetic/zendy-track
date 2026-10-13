@@ -18,7 +18,7 @@
                         <th>Campus</th>
                         <th>Department</th>
                         <th>Course</th>
-                        <th>Grade</th>
+                        <th>Year level</th>
                         <th>Status</th>
                     </tr>
                 </thead>

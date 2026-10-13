@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -15,16 +16,21 @@ class UserFactory extends Factory
 
     public function definition(): array
     {
+        $campus = fake()->randomElement(User::campusOptions());
+        $yearLevels = User::yearLevelsForCampus($campus);
+        $grade = fake()->randomElement($yearLevels);
+        $courses = User::coursesFor($campus, $grade);
+
         return [
             'fname' => fake()->firstName(),
             'lname' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'course' => fake()->optional()->randomElement(\App\Models\User::courseOptions()),
-            'grade' => fake()->optional()->randomElement(\App\Models\User::gradeOptions()),
+            'campus' => $campus,
+            'grade' => $grade,
+            'course' => fake()->randomElement($courses),
             'department' => fake()->optional()->randomElement(['College of IT', 'College of Business', 'College of Education']),
-            'campus' => fake()->randomElement(\App\Models\User::campusOptions()),
             'role' => 'student',
             'remember_token' => Str::random(10),
         ];

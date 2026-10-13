@@ -84,15 +84,20 @@
                     </div>
                 </div>
 
-                <div class="form-group-app" id="courseField">
-                    <label for="course">Course</label>
-                    <select id="course" name="course" class="form-control-app">
-                        <option value="" disabled {{ old('course') ? '' : 'selected' }}>Select course</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course }}" {{ old('course') === $course ? 'selected' : '' }}>{{ $course }}</option>
-                        @endforeach
+                <div class="form-group-app" id="yearLevelField">
+                    <label for="grade">Year level</label>
+                    <select id="grade" name="grade" class="form-control-app">
+                        <option value="" disabled selected>Select year level</option>
                     </select>
-                    <p class="form-hint" id="courseHint">Required for students.</p>
+                    <p class="form-hint">Required for students. Options depend on campus.</p>
+                </div>
+
+                <div class="form-group-app" id="courseField">
+                    <label for="course">Course / track</label>
+                    <select id="course" name="course" class="form-control-app">
+                        <option value="" disabled selected>Select course / track</option>
+                    </select>
+                    <p class="form-hint" id="courseHint">Required for students. Options depend on campus and year level.</p>
                 </div>
             </div>
 
@@ -117,25 +122,20 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('js/affiliation-dropdowns.js') }}"></script>
 <script>
 (function () {
     var roleSelect = document.getElementById('role');
-    var courseField = document.getElementById('courseField');
-    var courseInput = document.getElementById('course');
-    var courseHint = document.getElementById('courseHint');
 
-    function syncCourseField() {
-        var isStudent = roleSelect.value === 'student';
-        courseField.style.display = isStudent ? '' : 'none';
-        courseInput.required = isStudent;
-        courseHint.textContent = isStudent ? 'Required for students.' : 'Only used for students.';
-        if (!isStudent) {
-            courseInput.value = '';
-        }
-    }
-
-    roleSelect.addEventListener('change', syncCourseField);
-    syncCourseField();
+    initAffiliationDropdowns({
+        catalog: @json(\App\Models\User::affiliationCatalog()),
+        roleSelectId: 'role',
+        studentOnlyIds: ['yearLevelField', 'courseField'],
+        isStudent: function () { return roleSelect.value === 'student'; },
+        initialCampus: @json(old('campus', '')),
+        initialYear: @json(old('grade', '')),
+        initialCourse: @json(old('course', '')),
+    });
 })();
 </script>
 @endpush

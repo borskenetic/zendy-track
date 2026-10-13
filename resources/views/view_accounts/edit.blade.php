@@ -63,15 +63,15 @@
             <div class="form-row-2">
                 <div class="form-group-app">
                     <label for="campus">Campus</label>
+                    @php $selectedCampus = old('campus', $user->campus); @endphp
                     <select id="campus" name="campus" class="form-control-app" required>
-                        @php $selectedCampus = old('campus', $user->campus); @endphp
                         <option value="" disabled {{ $selectedCampus && in_array($selectedCampus, $campuses, true) ? '' : 'selected' }}>Select campus</option>
                         @foreach($campuses as $campus)
                             <option value="{{ $campus }}" {{ $selectedCampus === $campus ? 'selected' : '' }}>{{ $campus }}</option>
                         @endforeach
                     </select>
                     @if($user->campus && ! in_array($user->campus, $campuses, true))
-                        <p class="form-hint">Current value "{{ $user->campus }}" is not in the campus list — please choose Buenavista, Tagum, or Bay.</p>
+                        <p class="form-hint">Current value "{{ $user->campus }}" is not in the campus list — please choose a listed campus.</p>
                     @endif
                 </div>
                 <div class="form-group-app">
@@ -80,14 +80,17 @@
                 </div>
             </div>
 
+            <div class="form-group-app" id="yearLevelField">
+                <label for="grade">Year level</label>
+                <select id="grade" name="grade" class="form-control-app">
+                    <option value="" disabled selected>Select year level</option>
+                </select>
+            </div>
+
             <div class="form-group-app" id="courseField">
-                <label for="course">Course</label>
-                @php $selectedCourse = old('course', $user->course); @endphp
+                <label for="course">Course / track</label>
                 <select id="course" name="course" class="form-control-app">
-                    <option value="" disabled {{ $selectedCourse && in_array($selectedCourse, $courses, true) ? '' : 'selected' }}>Select course</option>
-                    @foreach($courses as $course)
-                        <option value="{{ $course }}" {{ $selectedCourse === $course ? 'selected' : '' }}>{{ $course }}</option>
-                    @endforeach
+                    <option value="" disabled selected>Select course / track</option>
                 </select>
                 @if($user->course && ! in_array($user->course, \App\Models\User::courseOptions(), true))
                     <p class="form-hint">Current value "{{ $user->course }}" is a legacy course — consider updating to a listed option.</p>
@@ -104,23 +107,20 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('js/affiliation-dropdowns.js') }}"></script>
 <script>
 (function () {
     var roleSelect = document.getElementById('role');
-    var courseField = document.getElementById('courseField');
-    var courseInput = document.getElementById('course');
 
-    function syncCourseField() {
-        var isStudent = roleSelect.value === 'student';
-        courseField.style.display = isStudent ? '' : 'none';
-        courseInput.required = isStudent;
-        if (!isStudent) {
-            courseInput.value = '';
-        }
-    }
-
-    roleSelect.addEventListener('change', syncCourseField);
-    syncCourseField();
+    initAffiliationDropdowns({
+        catalog: @json(\App\Models\User::affiliationCatalog()),
+        roleSelectId: 'role',
+        studentOnlyIds: ['yearLevelField', 'courseField'],
+        isStudent: function () { return roleSelect.value === 'student'; },
+        initialCampus: @json(old('campus', $user->campus)),
+        initialYear: @json(old('grade', $user->grade)),
+        initialCourse: @json(old('course', $user->course)),
+    });
 })();
 </script>
 @endpush

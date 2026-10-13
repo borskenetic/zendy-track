@@ -16,9 +16,10 @@ class UserSeeder extends Seeder
                 'email' => 'admin@jib.edu.ph',
                 'password' => 'password',
                 'role' => 'admin',
-                'campus' => 'Bay',
+                'campus' => 'Bay-Main',
                 'department' => 'Library',
                 'course' => null,
+                'grade' => null,
             ],
             [
                 'fname' => 'Maria',
@@ -26,9 +27,10 @@ class UserSeeder extends Seeder
                 'email' => 'librarian@jib.edu.ph',
                 'password' => 'password',
                 'role' => 'librarian',
-                'campus' => 'Bay',
+                'campus' => 'Bay-Main',
                 'department' => 'Library',
                 'course' => null,
+                'grade' => null,
             ],
             [
                 'fname' => 'Juan',
@@ -36,9 +38,10 @@ class UserSeeder extends Seeder
                 'email' => 'juan.santos@jib.edu.ph',
                 'password' => 'password',
                 'role' => 'student',
-                'campus' => 'Bay',
+                'campus' => 'Bay-Main',
                 'department' => 'College of Business',
-                'course' => 'BSBA Marketing',
+                'course' => 'BSTM',
+                'grade' => 'College',
             ],
             [
                 'fname' => 'Ana',
@@ -48,7 +51,8 @@ class UserSeeder extends Seeder
                 'role' => 'student',
                 'campus' => 'Tagum',
                 'department' => 'College of IT',
-                'course' => 'BSIT',
+                'course' => 'BSIS',
+                'grade' => 'College',
             ],
             [
                 'fname' => 'Carlos',
@@ -56,9 +60,10 @@ class UserSeeder extends Seeder
                 'email' => 'carlos.mendoza@jib.edu.ph',
                 'password' => 'password',
                 'role' => 'faculty',
-                'campus' => 'Bay',
+                'campus' => 'Buenavista',
                 'department' => 'College of Education',
                 'course' => null,
+                'grade' => null,
             ],
         ];
 

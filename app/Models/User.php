@@ -62,37 +62,91 @@ class User extends Authenticatable
         ];
     }
 
-    public static function campusOptions(): array
+    /**
+     * Campus → year level → course/track catalog.
+     *
+     * @return array<string, array<string, list<string>>>
+     */
+    public static function affiliationCatalog(): array
     {
         return [
-            'Buenavista',
-            'Tagum',
-            'Bay',
+            'Tagum' => [
+                'Grade 11' => ['B&E', 'ASSH', 'Tech-Pro', 'HE'],
+                'Grade 12' => ['B&E', 'ASSH', 'Tech-Pro'],
+                'College' => ['BSTM', 'BSIS', 'BSE', 'BSA', 'BSCRIM', 'BSAIS'],
+            ],
+            'Buenavista' => [
+                'Grade 11' => ['B&E', 'ASSH', 'Tech-Pro'],
+                'Grade 12' => ['B&E', 'ASSH', 'Tech-Pro'],
+                'College' => ['BSE', 'BSTM'],
+            ],
+            'Bay-Main' => [
+                'College' => [
+                    'BSA',
+                    'BSAIS',
+                    'BS Entrepreneurship (Microfinance)',
+                    'BSIS',
+                    'BSTM',
+                    'BSCRIM',
+                ],
+            ],
+            'Bay 2' => [
+                'Grade 11' => ['B&E', 'ASSH', 'Tech-Pro HE Cookery-Tourism', 'Tech-Pro ICT'],
+                'Grade 12' => ['ABM', 'HUMSS', 'HE Cookery-Tourism', 'ICT'],
+            ],
+            'San Pablo' => [
+                'Grade 11' => ['B&E', 'ASSH', 'Tech-Pro HE-Tourism', 'Tech-Pro ICT', 'STEM'],
+                'Grade 12' => ['ABM', 'HUMSS', 'HE-Tourism', 'ICT', 'STEM'],
+            ],
         ];
     }
 
-    public static function courseOptions(): array
+    public static function campusOptions(): array
     {
-        return [
-            'ASSH',
-            'B&E',
-            'BSA',
-            'BSAIS',
-            'BSCRIM',
-            'BSE',
-            'BSIS',
-            'BSTM',
-            'HE',
-            'Tech-Pro',
-        ];
+        return array_keys(self::affiliationCatalog());
     }
 
     public static function gradeOptions(): array
     {
-        return [
-            'Grade 11',
-            'Grade 12',
-        ];
+        return ['Grade 11', 'Grade 12', 'College'];
+    }
+
+    /** @return list<string> */
+    public static function yearLevelsForCampus(?string $campus): array
+    {
+        if ($campus === null || $campus === '') {
+            return [];
+        }
+
+        return array_keys(self::affiliationCatalog()[$campus] ?? []);
+    }
+
+    /** @return list<string> */
+    public static function coursesFor(?string $campus, ?string $yearLevel): array
+    {
+        if ($campus === null || $campus === '' || $yearLevel === null || $yearLevel === '') {
+            return [];
+        }
+
+        return self::affiliationCatalog()[$campus][$yearLevel] ?? [];
+    }
+
+    public static function courseOptions(): array
+    {
+        $courses = [];
+
+        foreach (self::affiliationCatalog() as $yearLevels) {
+            foreach ($yearLevels as $list) {
+                foreach ($list as $course) {
+                    $courses[$course] = true;
+                }
+            }
+        }
+
+        $courses = array_keys($courses);
+        sort($courses);
+
+        return $courses;
     }
 
     /**
@@ -128,8 +182,16 @@ class User extends Authenticatable
             return 'Buenavista';
         }
 
-        if (preg_match('/\bbay\b/', $compact) === 1) {
-            return 'Bay';
+        if (str_contains($compact, 'san pablo') || $compact === 'spc' || str_contains($compact, 'spc ')) {
+            return 'San Pablo';
+        }
+
+        if (str_contains($compact, 'bay 2') || str_contains($compact, 'bay2')) {
+            return 'Bay 2';
+        }
+
+        if (str_contains($compact, 'bay main') || str_contains($compact, 'baymain') || preg_match('/\bbay\b/', $compact) === 1) {
+            return 'Bay-Main';
         }
 
         // Default unknowns to Tagum so charts/filters stay consistent;

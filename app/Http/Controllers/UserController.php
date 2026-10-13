@@ -16,9 +16,24 @@ class UserController extends Controller
         return array_keys(User::roleOptions());
     }
 
-    private function allowedCourses(?User $user = null): array
+    private function allowedYearLevels(Request $request, ?User $user = null): array
     {
-        $courses = User::courseOptions();
+        $levels = User::yearLevelsForCampus($request->input('campus'));
+
+        if ($user?->grade && ! in_array($user->grade, $levels, true)) {
+            $levels[] = $user->grade;
+        }
+
+        return $levels;
+    }
+
+    private function allowedCourses(Request $request, ?User $user = null): array
+    {
+        $courses = User::coursesFor($request->input('campus'), $request->input('grade'));
+
+        if ($courses === []) {
+            $courses = User::courseOptions();
+        }
 
         if ($user?->course && ! in_array($user->course, $courses, true)) {
             $courses[] = $user->course;
@@ -27,7 +42,7 @@ class UserController extends Controller
         return $courses;
     }
 
-    private function userValidationRules(?User $user = null): array
+    private function userValidationRules(Request $request, ?User $user = null): array
     {
         return [
             'fname' => 'required|string|max:255',
@@ -41,8 +56,16 @@ class UserController extends Controller
             'role' => ['required', Rule::in($this->allowedRoles())],
             'campus' => ['required', Rule::in(User::campusOptions())],
             'department' => 'nullable|string|max:255',
-            'course' => ['nullable', 'required_if:role,student', Rule::in($this->allowedCourses($user))],
-            'grade' => ['nullable', Rule::in(User::gradeOptions())],
+            'grade' => [
+                'nullable',
+                'required_if:role,student',
+                Rule::in($this->allowedYearLevels($request, $user)),
+            ],
+            'course' => [
+                'nullable',
+                'required_if:role,student',
+                Rule::in($this->allowedCourses($request, $user)),
+            ],
             'password' => $user ? 'nullable|string|min:6' : 'required|string|min:6',
         ];
     }
@@ -127,18 +150,23 @@ class UserController extends Controller
                 continue;
             }
 
+            if ($role === 'student' && $grade === '') {
+                $errors[] = "Row $rowNumber: Year level is required for students.";
+                continue;
+            }
+
             if ($role === 'student' && $course === '') {
                 $errors[] = "Row $rowNumber: Course is required for students.";
                 continue;
             }
 
-            if ($role === 'student' && $course !== '' && ! in_array($course, User::courseOptions(), true)) {
-                $errors[] = "Row $rowNumber: Invalid course ($course). Must be one of: ".implode(', ', User::courseOptions());
+            if ($grade !== '' && ! in_array($grade, User::yearLevelsForCampus($campus), true)) {
+                $errors[] = "Row $rowNumber: Invalid year level ($grade) for campus $campus.";
                 continue;
             }
 
-            if ($grade !== '' && ! in_array($grade, User::gradeOptions(), true)) {
-                $errors[] = "Row $rowNumber: Invalid grade ($grade). Must be one of: ".implode(', ', User::gradeOptions());
+            if ($role === 'student' && $course !== '' && ! in_array($course, User::coursesFor($campus, $grade), true)) {
+                $errors[] = "Row $rowNumber: Invalid course ($course) for $campus / $grade.";
                 continue;
             }
 
@@ -222,16 +250,20 @@ class UserController extends Controller
                 $errors[] = 'Invalid campus';
             }
 
+            if ($role === 'student' && !$grade) {
+                $errors[] = 'Year level required for students';
+            }
+
             if ($role === 'student' && !$course) {
                 $errors[] = 'Course required for students';
             }
 
-            if ($role === 'student' && $course && ! in_array($course, User::courseOptions(), true)) {
-                $errors[] = 'Invalid course';
+            if ($grade !== '' && $campus && ! in_array($grade, User::yearLevelsForCampus($campus), true)) {
+                $errors[] = 'Invalid year level';
             }
 
-            if ($grade !== '' && ! in_array($grade, User::gradeOptions(), true)) {
-                $errors[] = 'Invalid grade';
+            if ($role === 'student' && $course && ! in_array($course, User::coursesFor($campus, $grade), true)) {
+                $errors[] = 'Invalid course';
             }
 
             $data[] = [
@@ -289,7 +321,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate($this->userValidationRules());
+        $validated = $request->validate($this->userValidationRules($request));
 
         $isStudent = $validated['role'] === 'student';
 
@@ -387,7 +419,7 @@ class UserController extends Controller
             'user' => $user,
             'roles' => User::roleOptions(),
             'campuses' => User::campusOptions(),
-            'courses' => $this->allowedCourses($user),
+            'courses' => User::courseOptions(),
             'grades' => User::gradeOptions(),
         ]);
     }
@@ -395,7 +427,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $validated = $request->validate($this->userValidationRules($user));
+        $validated = $request->validate($this->userValidationRules($request, $user));
 
         $isStudent = $validated['role'] === 'student';
 
@@ -407,10 +439,7 @@ class UserController extends Controller
             'campus' => $validated['campus'],
             'department' => $validated['department'] ?? null,
             'course' => $isStudent ? ($validated['course'] ?? null) : null,
-            // Grade UI is hidden for now; preserve existing value unless explicitly submitted.
-            'grade' => $isStudent
-                ? ($request->has('grade') ? ($validated['grade'] ?? null) : $user->grade)
-                : null,
+            'grade' => $isStudent ? ($validated['grade'] ?? null) : null,
         ];
 
         if (! empty($validated['password'])) {

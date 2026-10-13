@@ -43,6 +43,13 @@
                 <option value="{{ $campus }}" {{ request('campus') === $campus ? 'selected' : '' }}>{{ $campus }}</option>
             @endforeach
         </select>
+        <select name="grade" class="form-control-app">
+            <option value="">All year levels</option>
+            <option value="__none__" {{ request('grade') === '__none__' ? 'selected' : '' }}>No year level</option>
+            @foreach($grades as $grade)
+                <option value="{{ $grade }}" {{ request('grade') === $grade ? 'selected' : '' }}>{{ $grade }}</option>
+            @endforeach
+        </select>
         <select name="course" class="form-control-app">
             <option value="">All courses</option>
             <option value="__none__" {{ request('course') === '__none__' ? 'selected' : '' }}>No Course</option>
@@ -69,6 +76,7 @@
                     <th>Email</th>
                     <th>Role</th>
                     <th>Campus</th>
+                    <th>Year level</th>
                     <th>Course</th>
                     <th>Actions</th>
                 </tr>
@@ -80,6 +88,7 @@
                         <td>{{ $user->email }}</td>
                         <td><span class="badge-app">{{ $roles[$user->role] ?? ucfirst($user->role) }}</span></td>
                         <td>{{ $user->campus ?? '—' }}</td>
+                        <td>{{ $user->grade ?: '—' }}</td>
                         <td>{{ $user->course ?: 'No Course' }}</td>
                         <td style="white-space: nowrap;">
                             <a href="{{ route('users.edit', $user->id) }}" class="btn-app btn-outline-app btn-sm-app">Edit</a>
@@ -94,7 +103,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 32px;">No users found.</td>
+                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No users found.</td>
                     </tr>
                 @endforelse
             </tbody>
