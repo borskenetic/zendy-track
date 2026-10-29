@@ -202,6 +202,7 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/edit-user/{id}', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/update-user/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/delete-user/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::delete('/users/selected', [UserController::class, 'bulkDestroy'])->name('users.bulk-destroy');
     
     Route::get('/create-user', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
@@ -214,6 +215,7 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::post('/admin/pending/{id}/approve', [StudentController::class, 'approve'])->name('students.approve');
     Route::post('/admin/pending/{id}/reject', [StudentController::class, 'reject'])->name('students.reject');
     Route::get('/pending', [PendingStudentController::class, 'index'])->name('pending.index');
+    Route::post('/pending/approve-selected', [PendingStudentController::class, 'bulkApprove'])->name('pending.bulk-approve');
     
     Route::get('/pending/employees', [PendingEmployeeController::class, 'index'])->name('pending.employees');
     Route::post('/pending/employees/approve/{id}', [PendingEmployeeController::class, 'approve'])->name('employees.approve');

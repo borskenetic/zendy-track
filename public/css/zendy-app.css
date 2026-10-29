@@ -483,6 +483,11 @@ a { text-decoration: none; color: inherit; }
 .btn-warning-app { background: var(--warning); color: #fff; }
 .btn-sm-app { padding: 6px 12px; font-size: 0.8rem; }
 
+.btn-app:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
 .alert-app {
     padding: 12px 16px;
     border-radius: 10px;
@@ -996,7 +1001,7 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 576px) {
     .main-content { padding: 16px; }
     .filter-bar { flex-direction: column; }
-    .filter-bar input, .filter-bar select { width: 100%; }
+    .filter-bar input, .filter-bar select, .multi-select { width: 100%; }
     .guest-card { padding: 28px 20px; }
 }
 
@@ -1127,6 +1132,93 @@ a { text-decoration: none; color: inherit; }
 
 .role-guide-list li {
     margin-bottom: 10px;
+}
+
+.filter-card {
+    position: relative;
+    z-index: 5;
+}
+
+.multi-select {
+    position: relative;
+    min-width: 190px;
+}
+
+.multi-select-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+
+.multi-select-menu {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 220px;
+    max-height: 280px;
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    padding: 6px;
+}
+
+.multi-select-menu label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    cursor: pointer;
+}
+
+.multi-select-menu label:hover {
+    background: var(--body-bg);
+}
+
+.multi-select-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 2px 4px 4px;
+}
+
+.multi-select-clear {
+    border: none;
+    background: transparent;
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 6px;
+}
+
+.bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: #f8fafc;
+}
+
+.bulk-count {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.row-check {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
 }
 
 @media (max-width: 900px) {

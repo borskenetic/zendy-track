@@ -59,11 +59,23 @@
     </form>
 </div>
 
+<form id="bulkUsersForm" method="POST" action="{{ route('users.bulk-destroy') }}">
+    @csrf
+    @method('DELETE')
+</form>
+
 <div class="card-surface" style="padding: 0; overflow: hidden;">
+    <div class="bulk-bar">
+        <button type="submit" class="btn-app btn-danger-app btn-sm-app" id="bulkUsersButton" form="bulkUsersForm" disabled>Delete selected students</button>
+        <span id="bulkUsersCount" class="bulk-count">None selected</span>
+    </div>
     <div class="table-wrap" style="border: none;">
         <table class="table-app">
             <thead>
                 <tr>
+                    <th style="width: 42px;">
+                        <input type="checkbox" id="selectAllUsers" class="row-check" aria-label="Select all students on this page">
+                    </th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
@@ -76,6 +88,11 @@
             <tbody>
                 @forelse ($users as $user)
                     <tr>
+                        <td>
+                            @if($user->role === 'student')
+                                <input type="checkbox" class="row-check row-select" name="ids[]" value="{{ $user->id }}" form="bulkUsersForm" aria-label="Select {{ $user->fname }} {{ $user->lname }}">
+                            @endif
+                        </td>
                         <td>{{ $user->fname }} {{ $user->lname }}</td>
                         <td>{{ $user->email }}</td>
                         <td><span class="badge-app">{{ $roles[$user->role] ?? ucfirst($user->role) }}</span></td>
@@ -95,7 +112,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 32px;">No users found.</td>
+                        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 32px;">No users found.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -110,6 +127,7 @@
 
 @push('scripts')
 @include('partials.affiliation-dropdowns-boot')
+<script src="{{ asset('js/bulk-select.js') }}?v=1"></script>
 <script>
 initAffiliationFilters({
     campusId: 'filter_campus',
@@ -120,6 +138,14 @@ initAffiliationFilters({
     initialCourse: @json(request('course', '')),
     yearExtras: [{ value: '__none__', label: 'No year level' }],
     courseExtras: [{ value: '__none__', label: 'No Course' }],
+});
+
+initBulkSelect({
+    formId: 'bulkUsersForm',
+    selectAllId: 'selectAllUsers',
+    countId: 'bulkUsersCount',
+    buttonId: 'bulkUsersButton',
+    confirmMessage: (count) => 'Delete ' + count + ' selected student' + (count === 1 ? '' : 's') + '? This cannot be undone.',
 });
 </script>
 @endpush

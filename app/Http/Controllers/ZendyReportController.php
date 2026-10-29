@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ZendyReportsExport;
+use App\Models\User;
+use App\Models\ZendyLog;
 use App\Services\ZendyTrackingService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
@@ -30,6 +33,21 @@ class ZendyReportController extends Controller
     private function buildReportData(Request $request): array
     {
         $baseQuery = $this->tracking->baseQuery($request);
+        $this->excludeCourses($baseQuery, $request);
+
+        $courseChoices = collect(User::courseOptions())
+            ->merge(
+                ZendyLog::query()
+                    ->whereNotNull('course')
+                    ->where('course', '!=', '')
+                    ->distinct()
+                    ->pluck('course')
+            )
+            ->map(fn ($course) => trim((string) $course))
+            ->filter()
+            ->unique()
+            ->sort(fn ($a, $b) => strcasecmp($a, $b))
+            ->values();
 
         $logs = (clone $baseQuery)->orderBy('created_at', 'desc')->paginate(15);
 
@@ -92,6 +110,39 @@ class ZendyReportController extends Controller
             'submissionsByCampus',
             'submissionsByAction',
             'submissionsOverTime',
+            'courseChoices',
         );
+    }
+
+    private function excludeCourses(Builder $query, Request $request): void
+    {
+        $excluded = collect($request->input('exclude_courses', []))
+            ->filter(fn ($course) => is_string($course))
+            ->map(fn ($course) => trim($course))
+            ->filter()
+            ->unique()
+            ->take(100)
+            ->values();
+
+        if ($excluded->isEmpty()) {
+            return;
+        }
+
+        $named = $excluded->reject(fn ($course) => $course === '__none__')->values();
+        $excludeBlank = $excluded->contains('__none__');
+
+        $query->where(function ($q) use ($named, $excludeBlank) {
+            if ($named->isNotEmpty()) {
+                $placeholders = implode(', ', array_fill(0, $named->count(), '?'));
+                $q->whereRaw(
+                    'TRIM(COALESCE(course, \'\')) NOT IN ('.$placeholders.')',
+                    $named->all()
+                );
+            }
+
+            if ($excludeBlank) {
+                $q->whereRaw("TRIM(COALESCE(course, '')) <> ''");
+            }
+        });
     }
 }

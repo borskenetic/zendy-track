@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Rules\AllowedInstitutionEmail;
 use App\Support\InstitutionEmail;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -462,5 +463,32 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'User deleted successfully!');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = collect($request->input('ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0 && $id !== (int) auth()->id())
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return back()->with('error', 'Select at least one student to delete.');
+        }
+
+        try {
+            $count = User::whereIn('id', $ids)->where('role', 'student')->delete();
+        } catch (QueryException $e) {
+            return back()->with('error', 'Some selected students could not be deleted because other records still depend on them.');
+        }
+
+        if ($count === 0) {
+            return back()->with('error', 'Select at least one student to delete.');
+        }
+
+        $message = $count === 1 ? '1 student deleted.' : "{$count} students deleted.";
+
+        return back()->with('success', $message);
     }
 }

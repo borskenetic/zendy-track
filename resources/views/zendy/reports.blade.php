@@ -4,7 +4,16 @@
 @section('page_subtitle', 'Usage analytics and trends')
 
 @section('content')
-<form action="{{ route('zendy.reports') }}" method="GET" class="card-surface" style="margin-bottom: 20px;">
+@php
+    $excludedCourses = collect(request('exclude_courses', []))
+        ->filter(fn ($course) => is_string($course) && trim($course) !== '')
+        ->map(fn ($course) => trim($course))
+        ->values();
+    $excludedLabels = $excludedCourses
+        ->map(fn ($course) => $course === '__none__' ? 'No Course' : $course)
+        ->all();
+@endphp
+<form action="{{ route('zendy.reports') }}" method="GET" class="card-surface filter-card" style="margin-bottom: 20px;">
     <div class="filter-bar">
         <input type="date" name="from_date" class="form-control-app" value="{{ request('from_date') }}">
         <input type="date" name="to_date" class="form-control-app" value="{{ request('to_date') }}">
@@ -20,10 +29,35 @@
         <select name="search_course" id="filter_course" class="form-control-app">
             <option value="">All courses</option>
         </select>
+        <div class="multi-select" id="excludeCourses">
+            <button type="button" class="form-control-app multi-select-toggle" aria-haspopup="listbox" aria-expanded="false">
+                <span class="multi-select-label">Exclude courses</span>
+                <span aria-hidden="true">▾</span>
+            </button>
+            <div class="multi-select-menu" hidden>
+                <div class="multi-select-actions">
+                    <button type="button" class="multi-select-clear">Clear</button>
+                </div>
+                @foreach($courseChoices as $course)
+                    <label>
+                        <input type="checkbox" name="exclude_courses[]" value="{{ $course }}" data-label="{{ $course }}" @checked($excludedCourses->contains($course))>
+                        {{ $course }}
+                    </label>
+                @endforeach
+                <label>
+                    <input type="checkbox" name="exclude_courses[]" value="__none__" data-label="No Course" @checked($excludedCourses->contains('__none__'))>
+                    No Course
+                </label>
+            </div>
+        </div>
         <button type="submit" class="btn-app btn-primary-app">Filter</button>
         <a href="{{ route('zendy.reports') }}" class="btn-app btn-outline-app">Reset</a>
         <a href="{{ route('zendy.reports.export', request()->query()) }}" class="btn-app btn-outline-app">Download Excel</a>
     </div>
+    <p class="form-hint">Checked courses are left out of the summary numbers and every chart. Click Filter to apply.</p>
+    @if($excludedLabels !== [])
+        <p class="form-hint">Currently excluding {{ implode(', ', $excludedLabels) }}.</p>
+    @endif
 </form>
 
 <div class="card-grid">
@@ -83,6 +117,47 @@ initAffiliationFilters({
     initialYear: @json(request('search_grade', '')),
     initialCourse: @json(request('search_course', '')),
 });
+
+(function () {
+    const root = document.getElementById('excludeCourses');
+    if (!root) return;
+
+    const toggle = root.querySelector('.multi-select-toggle');
+    const menu = root.querySelector('.multi-select-menu');
+    const label = root.querySelector('.multi-select-label');
+    const boxes = () => Array.from(root.querySelectorAll('input[type="checkbox"]'));
+
+    function syncLabel() {
+        const checked = boxes().filter((box) => box.checked).map((box) => box.dataset.label);
+        if (checked.length === 0) {
+            label.textContent = 'Exclude courses';
+        } else if (checked.length <= 2) {
+            label.textContent = 'Excluding ' + checked.join(', ');
+        } else {
+            label.textContent = 'Excluding ' + checked.length + ' courses';
+        }
+    }
+
+    function setOpen(open) {
+        if (open) menu.removeAttribute('hidden');
+        else menu.setAttribute('hidden', '');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    toggle.addEventListener('click', () => setOpen(menu.hasAttribute('hidden')));
+    root.querySelector('.multi-select-clear').addEventListener('click', () => {
+        boxes().forEach((box) => { box.checked = false; });
+        syncLabel();
+    });
+    boxes().forEach((box) => box.addEventListener('change', syncLabel));
+    document.addEventListener('click', (event) => {
+        if (!root.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') setOpen(false);
+    });
+    syncLabel();
+})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

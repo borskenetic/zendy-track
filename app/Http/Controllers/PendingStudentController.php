@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\PendingUser;
 use App\Models\User;
 use App\Rules\AllowedInstitutionEmail;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -76,25 +77,63 @@ class PendingStudentController extends Controller
     public function approve($id)
     {
         DB::transaction(function () use ($id) {
-    
-            $pending = PendingUser::findOrFail($id);
-    
-            User::create([
-                'fname'       => $pending->fname,
-                'lname'       => $pending->lname,
-                'email'       => $pending->email,
-                'password'    => $pending->password,
-                'campus'      => $pending->campus,
-                'course'      => $pending->course,
-                'grade'       => $pending->grade,
-                'department'  => $pending->department,
-                'role'        => $pending->role,
-            ]);
-    
-            $pending->delete();
+            $this->approvePending(PendingUser::findOrFail($id));
         });
-    
+
         return back()->with('success', 'User approved successfully.');
+    }
+
+    public function bulkApprove(Request $request)
+    {
+        $ids = collect($request->input('ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return back()->with('error', 'Select at least one registration to approve.');
+        }
+
+        try {
+            $count = 0;
+
+            DB::transaction(function () use ($ids, &$count) {
+                $pendingUsers = PendingUser::whereIn('id', $ids)->get();
+
+                foreach ($pendingUsers as $pending) {
+                    $this->approvePending($pending);
+                    $count++;
+                }
+            });
+        } catch (QueryException $e) {
+            return back()->with('error', 'Could not approve the selected registrations. One of the emails may already have an account.');
+        }
+
+        if ($count === 0) {
+            return back()->with('error', 'Those registrations are no longer pending.');
+        }
+
+        $message = $count === 1 ? '1 user approved.' : "{$count} users approved.";
+
+        return back()->with('success', $message);
+    }
+
+    private function approvePending(PendingUser $pending): void
+    {
+        User::create([
+            'fname' => $pending->fname,
+            'lname' => $pending->lname,
+            'email' => $pending->email,
+            'password' => $pending->password,
+            'campus' => $pending->campus,
+            'course' => $pending->course,
+            'grade' => $pending->grade,
+            'department' => $pending->department,
+            'role' => $pending->role,
+        ]);
+
+        $pending->delete();
     }
     
     public function reject($id)

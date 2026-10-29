@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', \App\Support\Branding::portalTitle()) — {{ \App\Support\Branding::institutionName() }}</title>
     <link rel="icon" type="image/png" href="{{ \App\Support\Branding::logoUrl() }}">
-    <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=3">
     @include('layouts.partials.portal-branding')
     @stack('styles')
     @yield('styles')
