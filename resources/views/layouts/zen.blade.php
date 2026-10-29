@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', \App\Support\Branding::portalTitle()) — {{ \App\Support\Branding::institutionName() }}</title>
     <link rel="icon" type="image/png" href="{{ \App\Support\Branding::logoUrl() }}">
-    <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=3">
+    <link rel="stylesheet" href="{{ asset('css/zendy-app.css') }}?v=5">
     @include('layouts.partials.portal-branding')
     @stack('styles')
     @yield('styles')
@@ -130,7 +130,7 @@
         @endif
     };
 </script>
-<script src="{{ asset('js/zendy-session.js') }}?v=1"></script>
+<script src="{{ asset('js/zendy-session.js') }}?v=2"></script>
 @stack('scripts')
 @yield('footer')
 </body>

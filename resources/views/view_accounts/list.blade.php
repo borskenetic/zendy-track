@@ -127,7 +127,7 @@
 
 @push('scripts')
 @include('partials.affiliation-dropdowns-boot')
-<script src="{{ asset('js/bulk-select.js') }}?v=1"></script>
+<script src="{{ asset('js/bulk-select.js') }}?v=2"></script>
 <script>
 initAffiliationFilters({
     campusId: 'filter_campus',

@@ -31,11 +31,7 @@ class ZendyController extends Controller
             'destination' => config('zendy.redirect_url'),
         ]);
 
-        return view('zendy.launch', [
-            'redirectUrl' => config('zendy.redirect_url'),
-            'clickId' => $request->session()->get(ZendyTrackingService::SESSION_CLICK_ID),
-            'launchedAt' => $request->session()->get(ZendyTrackingService::SESSION_LAUNCHED_AT),
-        ]);
+        return redirect()->away(config('zendy.redirect_url'));
     }
 
     public function go(Request $request)

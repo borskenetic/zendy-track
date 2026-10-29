@@ -35,19 +35,22 @@
                 <span aria-hidden="true">▾</span>
             </button>
             <div class="multi-select-menu" hidden>
+                <input type="search" class="multi-select-search" placeholder="Search courses" aria-label="Search courses" autocomplete="off">
                 <div class="multi-select-actions">
                     <button type="button" class="multi-select-clear">Clear</button>
                 </div>
-                @foreach($courseChoices as $course)
+                <div class="multi-select-list">
+                    @foreach($courseChoices as $course)
+                        <label>
+                            <input type="checkbox" name="exclude_courses[]" value="{{ $course }}" data-label="{{ $course }}" @checked($excludedCourses->contains($course))>
+                            <span>{{ $course }}</span>
+                        </label>
+                    @endforeach
                     <label>
-                        <input type="checkbox" name="exclude_courses[]" value="{{ $course }}" data-label="{{ $course }}" @checked($excludedCourses->contains($course))>
-                        {{ $course }}
+                        <input type="checkbox" name="exclude_courses[]" value="__none__" data-label="No Course" @checked($excludedCourses->contains('__none__'))>
+                        <span>No Course</span>
                     </label>
-                @endforeach
-                <label>
-                    <input type="checkbox" name="exclude_courses[]" value="__none__" data-label="No Course" @checked($excludedCourses->contains('__none__'))>
-                    No Course
-                </label>
+                </div>
             </div>
         </div>
         <button type="submit" class="btn-app btn-primary-app">Filter</button>
@@ -106,6 +109,95 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .multi-select {
+        position: relative;
+        flex: 0 0 220px;
+        min-width: 220px;
+    }
+    .multi-select-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font: inherit;
+    }
+    .multi-select-menu[hidden] {
+        display: none !important;
+    }
+    .multi-select-menu {
+        position: absolute;
+        z-index: 40;
+        top: calc(100% + 6px);
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        width: 280px;
+        max-height: 340px;
+        padding: 8px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+    }
+    .multi-select-search {
+        width: 100%;
+        margin-bottom: 6px;
+        padding: 8px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.85rem;
+    }
+    .multi-select-actions {
+        display: flex;
+        justify-content: flex-end;
+        padding: 0 2px 6px;
+    }
+    .multi-select-clear {
+        border: none;
+        background: transparent;
+        color: #2563eb;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 2px 4px;
+    }
+    .multi-select-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        overflow: auto;
+    }
+    .multi-select-list label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        margin: 0;
+        padding: 7px 8px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        line-height: 1.3;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .multi-select-list label:hover {
+        background: #f1f5f9;
+    }
+    .multi-select-list label.is-hidden {
+        display: none;
+    }
+    @media (max-width: 576px) {
+        .multi-select { flex: 1 1 100%; width: 100%; }
+        .multi-select-menu { width: 100%; }
+    }
+</style>
+@endpush
+
 @section('footer')
 @include('partials.affiliation-dropdowns-boot')
 <script>
@@ -125,6 +217,7 @@ initAffiliationFilters({
     const toggle = root.querySelector('.multi-select-toggle');
     const menu = root.querySelector('.multi-select-menu');
     const label = root.querySelector('.multi-select-label');
+    const search = root.querySelector('.multi-select-search');
     const boxes = () => Array.from(root.querySelectorAll('input[type="checkbox"]'));
 
     function syncLabel() {
@@ -144,7 +237,21 @@ initAffiliationFilters({
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
 
-    toggle.addEventListener('click', () => setOpen(menu.hasAttribute('hidden')));
+    toggle.addEventListener('click', () => {
+        const open = menu.hasAttribute('hidden');
+        setOpen(open);
+        if (open) search.focus();
+    });
+    search.addEventListener('input', () => {
+        const query = search.value.trim().toLowerCase();
+        root.querySelectorAll('.multi-select-list label').forEach((row) => {
+            const text = row.textContent.trim().toLowerCase();
+            row.classList.toggle('is-hidden', query !== '' && !text.includes(query));
+        });
+    });
+    search.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') event.preventDefault();
+    });
     root.querySelector('.multi-select-clear').addEventListener('click', () => {
         boxes().forEach((box) => { box.checked = false; });
         syncLabel();
